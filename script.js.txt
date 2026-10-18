@@ -54,34 +54,56 @@
     const small = mobile.matches;
     if (small) {
       panels.forEach(panel => {
-        // On phones use gentle scroll fading without concealing any text permanently.
-        if (reduceMotion) { panel.style.opacity = '1'; panel.style.transform = ''; return; }
-        const rect = panel.getBoundingClientRect();
-        const vh = window.innerHeight;
-        const appearing = clamp((vh - rect.top)/(vh*.42), .18, 1);
-        const leaving = clamp(rect.bottom/(vh*.45), .18, 1);
-        panel.style.opacity = String(Math.min(appearing,leaving));
-        panel.style.transform = `translateY(${Math.round((1-appearing)*22)}px)`;
+        // On phones keep every project fully readable; no partial fade-over between cards.
+        panel.style.opacity = '1';
+        panel.style.transform = '';
         panel.style.visibility = 'visible';
         panel.style.pointerEvents = 'auto';
+        panel.classList.add('is-active');
+        panel.setAttribute('aria-hidden', 'false');
       });
       return;
     }
+    // Give each project more reading time before starting the transition.
+    reel.style.height = `${100 + (panels.length - 1) * 155}vh`;
     const rect = reel.getBoundingClientRect();
-    const available = Math.max(1, reel.offsetHeight - (window.innerHeight - parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header'))));
+    const headerHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header')) || 82;
+    const available = Math.max(1, reel.offsetHeight - (window.innerHeight - headerHeight));
     const distance = clamp(-rect.top, 0, available);
     const progress = distance / available;
     const position = progress * (panels.length - 1);
+    const baseIndex = Math.max(0, Math.min(panels.length - 1, Math.floor(position)));
+    const local = position - baseIndex;
+    const holdStart = 0.38;
+    const holdEnd = 0.62;
+    const smoothstep = t => t * t * (3 - 2 * t);
+    let currentOpacity = 1;
+    let nextOpacity = 0;
+    if (baseIndex < panels.length - 1) {
+      if (local <= holdStart) {
+        currentOpacity = 1;
+        nextOpacity = 0;
+      } else if (local >= holdEnd) {
+        currentOpacity = 0;
+        nextOpacity = 1;
+      } else {
+        const mix = smoothstep((local - holdStart) / (holdEnd - holdStart));
+        currentOpacity = 1 - mix;
+        nextOpacity = mix;
+      }
+    }
     panels.forEach((panel, i) => {
-      // Adjacent panels sum to 100% opacity for a true crossfade.
-      const opacity = clamp(1 - Math.abs(position-i), 0, 1);
+      let opacity = 0;
+      if (i === baseIndex) opacity = currentOpacity;
+      else if (i === baseIndex + 1) opacity = nextOpacity;
       panel.style.opacity = opacity.toFixed(4);
-      panel.style.visibility = opacity > .001 ? 'visible' : 'hidden';
-      panel.classList.toggle('is-active', opacity > .001);
-      panel.style.pointerEvents = opacity > .51 ? 'auto' : 'none';
-      panel.setAttribute('aria-hidden', opacity < .51 ? 'true' : 'false');
+      panel.style.visibility = opacity > 0.002 ? 'visible' : 'hidden';
+      panel.classList.toggle('is-active', opacity > 0.002);
+      panel.style.pointerEvents = opacity > 0.55 ? 'auto' : 'none';
+      panel.setAttribute('aria-hidden', opacity > 0.55 ? 'false' : 'true');
     });
-    if (current) current.textContent = String(Math.round(position) + 1).padStart(2,'0');
+    const activeIndex = nextOpacity >= 0.5 ? Math.min(baseIndex + 1, panels.length - 1) : baseIndex;
+    if (current) current.textContent = String(activeIndex + 1).padStart(2,'0');
     if (meter) meter.style.width = `${Math.round(progress*100)}%`;
   }
   const scheduleUpdate = () => {if (!frame) frame = requestAnimationFrame(updateCrossfade);};
