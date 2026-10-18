@@ -39,7 +39,7 @@
   addEventListener('pageshow', () => document.body.classList.remove('is-leaving'));
 
   // Projects: smooth, demonstrable scroll-position-controlled crossfade.
-  // On desktop all five project panels occupy the SAME stage; no scrolling individual cards.
+  // On desktop all seven project panels occupy the SAME stage; no scrolling individual cards.
   const reel = document.querySelector('.projects-reel');
   const panels = [...document.querySelectorAll('.project-panel')];
   if (!reel || panels.length === 0) return;
@@ -106,7 +106,7 @@
     requestAnimationFrame(tick);
   });
   // Follow direct links from the homepage's project list to a project position.
-  if (location.hash && /^#project-0[1-5]$/.test(location.hash) && !mobile.matches) {
+  if (location.hash && /^#project-0[1-7]$/.test(location.hash) && !mobile.matches) {
     const targetNumber=Number(location.hash.slice(-1))-1;
     const move=()=>{const start=reel.getBoundingClientRect().top+scrollY;const travel=reel.offsetHeight-(innerHeight-82);scrollTo({top:start+travel*targetNumber/(panels.length-1),behavior:'instant'});scheduleUpdate();};
     addEventListener('load',()=>setTimeout(move,80),{once:true});
