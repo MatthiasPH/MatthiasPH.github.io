@@ -38,6 +38,31 @@
   });
   addEventListener('pageshow', () => document.body.classList.remove('is-leaving'));
 
+  // Accessible, full-width Warman demonstration player. Kept outside the sticky reel.
+  const warmanDialog = document.getElementById('warman-video-dialog');
+  const warmanVideo = warmanDialog?.querySelector('video');
+  const warmanWatchButton = document.querySelector('[data-open-warman-video]');
+  warmanWatchButton?.addEventListener('click', () => {
+    if (!warmanDialog) return;
+    if (typeof warmanDialog.showModal === 'function') warmanDialog.showModal();
+    else warmanDialog.setAttribute('open','');
+    document.body.classList.add('warman-video-open');
+  });
+  warmanDialog?.querySelector('[data-close-warman-video]')?.addEventListener('click', () => {
+    if (typeof warmanDialog.close === 'function') warmanDialog.close();
+    else {warmanDialog.removeAttribute('open'); warmanVideo?.pause(); document.body.classList.remove('warman-video-open');}
+  });
+  warmanDialog?.addEventListener('click', event => {
+    if (event.target === warmanDialog) warmanDialog.close();
+  });
+  warmanDialog?.addEventListener('close', () => {
+    warmanVideo?.pause();
+    if (warmanVideo) warmanVideo.currentTime = 0;
+    document.body.classList.remove('warman-video-open');
+    // Restore keyboard focus to the trigger when the dialog closes.
+    warmanWatchButton?.focus({preventScroll:true});
+  });
+
   // Projects: smooth, demonstrable scroll-position-controlled crossfade.
   // On desktop all seven project panels occupy the SAME stage; no scrolling individual cards.
   const reel = document.querySelector('.projects-reel');

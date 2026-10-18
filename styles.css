@@ -76,3 +76,10 @@ body.warman-video-open{overflow:hidden}
 @media (max-width:700px){.project-warman-feature{min-height:315px;height:315px}.project-warman-feature .art-label{font-size:8px;left:12px;bottom:13px;padding:6px 8px;max-width:43%}.warman-watch-button{right:10px;bottom:10px;padding:9px 10px;min-height:50px;gap:7px;font-size:11px;max-width:55%}.warman-watch-button small{font-size:9px}.warman-play-icon{width:28px;height:28px}.warman-video-dialog{max-width:calc(100vw - 18px);max-height:calc(100dvh - 22px)}.warman-video-dialog video{max-height:60dvh}}
 @media (max-width:380px){.project-warman-feature{height:250px;min-height:250px}.project-warman-feature .art-label{max-width:33%}}
 @media (prefers-reduced-motion:reduce){.warman-watch-button{transition:none}}
+
+
+/* Prevent the floating project tracker from obscuring project media.
+   Project numbers remain visible in each project's heading. */
+.reel-counter,body.js .reel-counter{display:none!important}
+/* Native modal is the top layer; the z-index also protects older browsers. */
+.warman-video-dialog[open]{z-index:2147483647}
