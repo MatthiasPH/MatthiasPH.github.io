@@ -51,14 +51,28 @@ body.js .reveal{opacity:0;transform:translateY(36px);filter:blur(6px);transition
 @media (max-width:380px){.project-real-image{min-height:250px;height:250px}.project-info h2{font-size:35px}}
 
 
-/* Warman media layout */
-.project-media-stack{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(0,.84fr);gap:14px;padding:14px;background:#e8edf1;align-items:stretch;height:100%}
-.project-media-card{position:relative;overflow:hidden;background:#f7f9fb;min-height:0;display:flex;align-items:center;justify-content:center;border:1px solid #d9e1e8}
-.project-media-card img,.project-media-card video{display:block;width:100%;height:100%;object-fit:cover;object-position:center;background:#e8edf1}
-.project-media-stack .project-real-image img{object-fit:cover;object-position:center}
-.project-video-card video{background:#000}
-.project-media-card .art-label{background:rgba(251,252,252,.94);color:#4777b9;max-width:calc(100% - 28px);padding:9px 11px;line-height:1.45;letter-spacing:.6px;left:12px;bottom:12px}
-.project-video-card .art-label{color:#3b6fb8}
-@media (max-width:1150px) and (min-width:701px){.project-media-stack{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(0,.7fr)}}
-@media (max-width:700px){.project-media-stack{height:auto;min-height:0;grid-template-columns:1fr;grid-template-rows:auto auto;padding:10px;gap:10px}.project-media-card{height:235px}.project-media-card .art-label{font-size:9px;max-width:88%}}
-@media (max-width:380px){.project-media-card{height:195px}}
+
+/* Warman project: single full-sized photo with a landscape modal video. */
+.project-warman-feature{isolation:isolate;position:relative;background:#e8edf1}
+.project-warman-feature>img{width:100%;height:100%;max-height:100%;padding:0;object-fit:cover;object-position:center center}
+.project-warman-feature:after{content:"";position:absolute;inset:55% 0 0;pointer-events:none;background:linear-gradient(transparent,rgba(13,20,28,.31));z-index:0}
+.project-warman-feature .art-label{z-index:1;bottom:19px;left:20px;max-width:42%;padding:8px 11px;background:rgba(255,255,255,.96)}
+.warman-watch-button{position:absolute;z-index:2;right:18px;bottom:18px;display:flex;align-items:center;gap:11px;min-height:60px;padding:12px 16px;border:1px solid #fff;border-radius:8px;background:rgba(255,255,255,.97);box-shadow:0 10px 30px #090e172e;color:#111d2a;cursor:pointer;text-align:left;font:inherit;font-size:13px;font-weight:750;transition:transform .2s ease,box-shadow .2s ease}
+.warman-watch-button small{display:block;color:#647284;margin-top:3px;font-size:10px;font-weight:500}
+.warman-watch-button:hover{transform:translateY(-3px);box-shadow:0 16px 32px #090e1740}
+.warman-watch-button:focus-visible,.warman-close-button:focus-visible{outline:3px solid #2366c9;outline-offset:3px}
+.warman-play-icon{display:grid;place-items:center;width:35px;height:35px;flex-shrink:0;border-radius:50%;background:var(--blue);color:#fff;font-size:12px;padding-left:2px}
+.warman-video-dialog{position:fixed;inset:0;margin:auto;max-width:min(1000px,calc(100vw - 36px));width:100%;max-height:calc(100dvh - 40px);padding:0;border:0;border-radius:12px;box-shadow:0 24px 90px #0007;background:#fff;color:#111d2a;overflow:auto}
+.warman-video-dialog::backdrop{background:rgba(7,14,26,.82);backdrop-filter:blur(7px)}
+.warman-video-dialog-inner{padding:clamp(12px,2.5vw,24px)}
+.warman-video-dialog-header{display:flex;gap:18px;justify-content:space-between;align-items:center;margin-bottom:15px}
+.warman-video-dialog-header span{font-size:10px;font-weight:800;letter-spacing:1.8px;color:#2865bd}
+.warman-video-dialog-header h2{font-size:clamp(20px,2.5vw,28px);letter-spacing:-.04em;line-height:1.25;margin:6px 0 0;font-weight:700}
+.warman-close-button{border:1px solid #d7e0e9;border-radius:50%;background:#f2f5f9;width:39px;height:39px;font-size:26px;font-weight:400;line-height:1;cursor:pointer;flex-shrink:0}
+.warman-video-dialog video{display:block;width:100%;height:auto;aspect-ratio:16 / 9;max-height:min(70dvh,calc(100dvw * .55));object-fit:contain;background:#090d12;border-radius:6px}
+.warman-video-dialog-inner>p{margin:12px 0 0;font-size:12px;color:#697481;line-height:1.6}
+.warman-video-dialog-inner>p a{color:var(--blue);font-weight:650}
+body.warman-video-open{overflow:hidden}
+@media (max-width:700px){.project-warman-feature{min-height:315px;height:315px}.project-warman-feature .art-label{font-size:8px;left:12px;bottom:13px;padding:6px 8px;max-width:43%}.warman-watch-button{right:10px;bottom:10px;padding:9px 10px;min-height:50px;gap:7px;font-size:11px;max-width:55%}.warman-watch-button small{font-size:9px}.warman-play-icon{width:28px;height:28px}.warman-video-dialog{max-width:calc(100vw - 18px);max-height:calc(100dvh - 22px)}.warman-video-dialog video{max-height:60dvh}}
+@media (max-width:380px){.project-warman-feature{height:250px;min-height:250px}.project-warman-feature .art-label{max-width:33%}}
+@media (prefers-reduced-motion:reduce){.warman-watch-button{transition:none}}
