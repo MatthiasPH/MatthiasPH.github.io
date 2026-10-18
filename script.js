@@ -1,159 +1,114 @@
-/* Matthias Paterson-Hawes — portfolio interactions. No external JavaScript dependencies. */
+/* Matthias Paterson-Hawes Portfolio — no dependencies. */
 (() => {
-  'use strict';
-  const menuButton = document.getElementById('menu-btn');
-  const mobileMenu = document.getElementById('mobile-menu');
-  function closeMenu() {
-    mobileMenu.hidden = true;
-    menuButton.setAttribute('aria-expanded', 'false');
-    menuButton.setAttribute('aria-label', 'Open menu');
+  document.body.classList.add('js');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const menuButton = document.querySelector('.mobile-toggle');
+  const mobileMenu = document.getElementById('mobile-navigation');
+  if (menuButton && mobileMenu) {
+    const closeMenu = () => { menuButton.setAttribute('aria-expanded','false'); menuButton.setAttribute('aria-label','Open navigation'); mobileMenu.hidden = true; };
+    menuButton.addEventListener('click', () => {
+      const expanded = menuButton.getAttribute('aria-expanded') === 'true';
+      menuButton.setAttribute('aria-expanded', String(!expanded));
+      menuButton.setAttribute('aria-label', expanded ? 'Open navigation' : 'Close navigation');
+      mobileMenu.hidden = expanded;
+    });
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+    window.addEventListener('resize', () => { if (window.innerWidth > 700) closeMenu(); });
   }
-  menuButton.addEventListener('click', () => {
-    const open = menuButton.getAttribute('aria-expanded') !== 'true';
-    mobileMenu.hidden = !open;
-    menuButton.setAttribute('aria-expanded', String(open));
-    menuButton.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-  });
-  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
-  window.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
-  window.addEventListener('resize', () => { if (innerWidth > 600) closeMenu(); });
+  const reveals = [...document.querySelectorAll('.reveal')];
+  if (reduceMotion || !('IntersectionObserver' in window)) reveals.forEach(el => el.classList.add('in-view'));
+  else {
+    const io = new IntersectionObserver(entries => entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('in-view'); io.unobserve(entry.target); }
+    }), {threshold: .09, rootMargin: '0px 0px -5% 0px'});
+    reveals.forEach(el => io.observe(el));
+  }
+  requestAnimationFrame(() => document.body.classList.add('is-ready'));
 
-  // Click-to-expand education, jobs and awards. Multiple entries may stay open.
-  document.querySelectorAll('.exp-trigger, .award-trigger').forEach(button => {
-    button.addEventListener('click', () => {
-      const expanded = button.getAttribute('aria-expanded') !== 'true';
-      button.setAttribute('aria-expanded', String(expanded));
-      button.closest('.experience-row, .award')?.classList.toggle('expanded', expanded);
+  // Page transitions for internal navigation. Works with file:// and GitHub Pages.
+  document.querySelectorAll('a[href]').forEach(a => {
+    const href = a.getAttribute('href') || '';
+    if (!/^((index|projects|about|experience)\.html)(#.*)?$/.test(href) || reduceMotion) return;
+    a.addEventListener('click', e => {
+      if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      e.preventDefault(); document.body.classList.add('is-leaving');
+      setTimeout(() => { location.href = href; }, 240);
     });
   });
+  addEventListener('pageshow', () => document.body.classList.remove('is-leaving'));
 
-  // Fade/blur/slide-up reveal on entry. Respects reduced motion and always leaves
-  // content visible if JS or IntersectionObserver is unavailable.
-  const motionAllowed = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const targets = Array.from(document.querySelectorAll('.reveal'));
-  if (motionAllowed && 'IntersectionObserver' in window) {
-    document.documentElement.classList.add('js-motion');
-    const observer = new IntersectionObserver((entries, io) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-    targets.forEach(element => observer.observe(element));
-  } else {
-    targets.forEach(el => el.classList.add('revealed'));
-  }
+  // Projects: smooth, demonstrable scroll-position-controlled crossfade.
+  // On desktop all five project panels occupy the SAME stage; no scrolling individual cards.
+  const reel = document.querySelector('.projects-reel');
+  const panels = [...document.querySelectorAll('.project-panel')];
+  if (!reel || panels.length === 0) return;
+  const mobile = window.matchMedia('(max-width:700px)');
+  const current = document.getElementById('reel-current');
+  const meter = document.getElementById('reel-meter-fill');
+  let frame = null;
+  const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
 
-  // TRUE SCROLL CROSSFADE — five panels share a sticky stage.
-  // The reel's scroll distance maps onto four transitions. Each transition
-  // overlaps the outgoing and incoming project with complementary opacity.
-  const reel = document.querySelector('.project-reel');
-  const chapters = Array.from(document.querySelectorAll('.project-stage .project-chapter'));
-  const chapterLinks = Array.from(document.querySelectorAll('.project-chapter-nav a'));
-  if (reel && chapters.length === 5 && motionAllowed && 'requestAnimationFrame' in window) {
-    document.documentElement.classList.add('js-crossfade');
-    const sticky = reel.querySelector('.project-reel-sticky');
-    const eased = x => {
-      const clamped = Math.min(1, Math.max(0, x));
-      return clamped * clamped * (3 - 2 * clamped);
-    };
-    const clamp = (min, value, max) => Math.min(max, Math.max(min, value));
-    let queued = false;
-    let lastActive = -1;
-    function updateSlides() {
-      queued = false;
-      const top = reel.getBoundingClientRect().top + window.scrollY;
-      const runway = Math.max(1, reel.offsetHeight - sticky.offsetHeight);
-      const progress = clamp(0, (window.scrollY - top) / runway, 1);
-      const position = progress * (chapters.length - 1);
-      const current = Math.min(chapters.length - 1, Math.floor(position));
-      const local = position - current;
-      // Each card holds still and fully visible before a long, clear dissolve.
-      const dissolve = eased((local - .36) / .56);
-      const opacities = chapters.map((_, i) =>
-        i === current ? 1 - dissolve : i === current + 1 ? dissolve : 0
-      );
-      if (current === chapters.length - 1) opacities[current] = 1;
-      const active = clamp(0, (dissolve > .5 ? current + 1 : current), chapters.length - 1);
-      chapters.forEach((chapter, index) => {
-        const opacity = opacities[index];
-        chapter.style.setProperty('--panel-opacity', opacity.toFixed(4));
-        const interactive = index === active;
-        chapter.classList.toggle('is-interactive', interactive);
-        chapter.classList.toggle('is-on-screen', opacity > .001 && !interactive);
-        // Prevent keyboard tabbing into invisible cards.
-        chapter.inert = !interactive;
-        chapter.setAttribute('aria-hidden', interactive ? 'false' : 'true');
+  function updateCrossfade() {
+    frame = null;
+    const small = mobile.matches;
+    if (small) {
+      panels.forEach(panel => {
+        // On phones use gentle scroll fading without concealing any text permanently.
+        if (reduceMotion) { panel.style.opacity = '1'; panel.style.transform = ''; return; }
+        const rect = panel.getBoundingClientRect();
+        const vh = window.innerHeight;
+        const appearing = clamp((vh - rect.top)/(vh*.42), .18, 1);
+        const leaving = clamp(rect.bottom/(vh*.45), .18, 1);
+        panel.style.opacity = String(Math.min(appearing,leaving));
+        panel.style.transform = `translateY(${Math.round((1-appearing)*22)}px)`;
+        panel.style.visibility = 'visible';
+        panel.style.pointerEvents = 'auto';
       });
-      chapterLinks.forEach((link, index) => {
-        link.classList.toggle('is-current', index === active);
-        if (index === active) link.setAttribute('aria-current', 'location');
-        else link.removeAttribute('aria-current');
-      });
-      reel.style.setProperty('--story-progress', progress.toFixed(4));
-      if (lastActive !== active) {
-        lastActive = active;
-        const footer = reel.querySelector('.project-reel-footer');
-        if (footer) footer.firstChild.textContent = `SCROLL TO CROSSFADE  /  ${String(active + 1).padStart(2,'0')} — 05`;
-      }
+      return;
     }
-    function requestSlides() {
-      if (!queued) { queued = true; requestAnimationFrame(updateSlides); }
-    }
-    function scrollToProject(index, addHistory=true) {
-      const top = reel.getBoundingClientRect().top + window.scrollY;
-      const runway = Math.max(0, reel.offsetHeight - sticky.offsetHeight);
-      // At the start of a panel's segment it is fully visible.
-      const destination = top + runway * index / (chapters.length - 1);
-      if (addHistory) history.pushState(null, '', `#project-${String(index + 1).padStart(2,'0')}`);
-      window.scrollTo({top:destination, behavior:'smooth'});
-    }
-    document.querySelectorAll('a[href^="#project-0"]').forEach(anchor => {
-      anchor.addEventListener('click', event => {
-        const match = anchor.getAttribute('href').match(/^#project-0([1-5])$/);
-        if (!match) return;
-        event.preventDefault();
-        scrollToProject(Number(match[1]) - 1);
-      });
+    const rect = reel.getBoundingClientRect();
+    const available = Math.max(1, reel.offsetHeight - (window.innerHeight - parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header'))));
+    const distance = clamp(-rect.top, 0, available);
+    const progress = distance / available;
+    const position = progress * (panels.length - 1);
+    panels.forEach((panel, i) => {
+      // Adjacent panels sum to 100% opacity for a true crossfade.
+      const opacity = clamp(1 - Math.abs(position-i), 0, 1);
+      panel.style.opacity = opacity.toFixed(4);
+      panel.style.visibility = opacity > .001 ? 'visible' : 'hidden';
+      panel.classList.toggle('is-active', opacity > .001);
+      panel.style.pointerEvents = opacity > .51 ? 'auto' : 'none';
+      panel.setAttribute('aria-hidden', opacity < .51 ? 'true' : 'false');
     });
-    window.addEventListener('scroll', requestSlides, {passive:true});
-    window.addEventListener('resize', requestSlides);
-    window.addEventListener('pageshow', requestSlides);
-    requestAnimationFrame(() => {
-      const match = location.hash.match(/^#project-0([1-5])$/);
-      if (match) scrollToProject(Number(match[1]) - 1, false);
-      else updateSlides();
-    });
+    if (current) current.textContent = String(Math.round(position) + 1).padStart(2,'0');
+    if (meter) meter.style.width = `${Math.round(progress*100)}%`;
   }
+  const scheduleUpdate = () => {if (!frame) frame = requestAnimationFrame(updateCrossfade);};
+  addEventListener('scroll',scheduleUpdate,{passive:true});
+  addEventListener('resize',scheduleUpdate);
+  mobile.addEventListener('change',scheduleUpdate);
+  updateCrossfade();
 
-  // Thin cyan-violet reading progress bar.
-  const progress = document.getElementById('scroll-progress');
-  let waiting = false;
-  function updateProgress() {
-    const max = document.documentElement.scrollHeight - innerHeight;
-    progress.style.transform = `scaleX(${max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0})`;
-    waiting = false;
+  // The fade preview visibly animates between the first and second panel.
+  // Using native scrolling means this is exactly the same effect as manual scrolling.
+  document.querySelector('.demo-fade')?.addEventListener('click', () => {
+    if (mobile.matches) {panels[0]?.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});return;}
+    const startY = reel.getBoundingClientRect().top + scrollY;
+    const length = reel.offsetHeight - (innerHeight - 82);
+    const from = startY;
+    const to = startY + length/(panels.length-1);
+    scrollTo({top:from,behavior:'instant'});
+    if (reduceMotion) {scrollTo({top:to,behavior:'instant'});return;}
+    const t0 = performance.now();
+    const duration = 2300;
+    function tick(now) {const t=clamp((now-t0)/duration,0,1);const eased=t*t*(3-2*t);scrollTo({top:from+(to-from)*eased,behavior:'instant'});if(t<1)requestAnimationFrame(tick);}
+    requestAnimationFrame(tick);
+  });
+  // Follow direct links from the homepage's project list to a project position.
+  if (location.hash && /^#project-0[1-5]$/.test(location.hash) && !mobile.matches) {
+    const targetNumber=Number(location.hash.slice(-1))-1;
+    const move=()=>{const start=reel.getBoundingClientRect().top+scrollY;const travel=reel.offsetHeight-(innerHeight-82);scrollTo({top:start+travel*targetNumber/(panels.length-1),behavior:'instant'});scheduleUpdate();};
+    addEventListener('load',()=>setTimeout(move,80),{once:true});
   }
-  window.addEventListener('scroll', () => {
-    if (!waiting) { waiting = true; requestAnimationFrame(updateProgress); }
-  }, { passive: true });
-  window.addEventListener('resize', updateProgress);
-  updateProgress();
-
-  // Current-section highlight in desktop navigation.
-  if ('IntersectionObserver' in window) {
-    const links = document.querySelectorAll('.desktop-links a');
-    const sectionObserver = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          links.forEach(a => a.classList.toggle('active', a.hash === '#' + entry.target.id));
-        }
-      });
-    }, { rootMargin: '-20% 0px -65% 0px' });
-    document.querySelectorAll('main section[id]').forEach(section => sectionObserver.observe(section));
-  }
-  const year = document.getElementById('current-year');
-  if (year) year.textContent = new Date().getFullYear();
 })();
