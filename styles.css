@@ -141,3 +141,17 @@ img,video{max-width:100%;display:block}
 .toc-item strong{color:#e7e9ee}
 .toc-item span{color:#9ca4b2}
 @media(min-width:821px){.book-shell,.book-page{min-height:660px}}
+
+/* V3: Fix invisible page turns and preserve the 3D layer throughout rotation. */
+.book-pages{filter:none;perspective:3800px;transform-style:preserve-3d}
+.book-shell.is-open{filter:none}
+.book-page{box-shadow:0 28px 60px rgba(0,0,0,.22)}
+.flip-sheet{opacity:1;z-index:60;filter:none;backface-visibility:visible;-webkit-backface-visibility:visible}
+.flip-sheet.turning{display:block;opacity:1;box-shadow:0 12px 32px rgba(43,33,20,.18)}
+.flip-face{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.flip-sheet.turning .flip-front{box-shadow:inset -13px 0 28px rgba(37,28,14,.15), 10px 0 22px rgba(25,20,13,.14)}
+.flip-sheet.turning .flip-back{box-shadow:inset 13px 0 28px rgba(37,28,14,.13), -10px 0 20px rgba(25,20,13,.12)}
+@media(max-width:820px){
+  /* On phones/tablets, show an explicit whole-spread page change instead of an invisible 3D leaf. */
+  .book-pages{perspective:1100px}
+}

@@ -22,3 +22,6 @@ Upload the **contents** of this folder, not the enclosing folder, to the root of
 - Users who prefer reduced motion get a simplified interaction.
 
 All project data is in `script.js` in the `projects` array. Update the two placeholders there when you have more details.
+
+## Page-turn animation fix (v3)
+The original 3D turning sheet inherited opacity: 0 from an earlier CSS rule, so projects changed without a visible leaf. v3 explicitly makes the sheet visible, preserves 3D perspective, and adds a clearly visible stacked-page transition on narrow screens. The HTML files use versioned CSS/JS URLs to discourage GitHub Pages from showing old cached assets.

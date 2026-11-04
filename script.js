@@ -163,7 +163,7 @@
   const bookStage = document.querySelector('.book-stage');
   const compact = window.matchMedia('(max-width:820px)');
   const openDuration = reduceMotion ? 0 : 1580;
-  const turnDuration = reduceMotion ? 0 : 1100;
+  const turnDuration = reduceMotion ? 0 : 1320;
   let currentIndex = 0;
   let isAnimating = false;
   let isOpen = false;
@@ -282,20 +282,31 @@
     pauseVideo();
     const direction = index > currentIndex ? 'next' : 'prev';
     const newProject = projects[index];
-    if (reduceMotion || compact.matches) {
-      const leftAnim = leftPageContent.animate(
-        [{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(8px)'}],
-        {duration:reduceMotion ? 1 : 180,fill:'forwards',easing:'ease-in'}
-      );
-      const rightAnim = rightPageContent.animate(
-        [{opacity:1},{opacity:0}],{duration:reduceMotion ? 1 : 180,fill:'forwards'}
-      );
-      await Promise.allSettled([leftAnim.finished,rightAnim.finished]);
+    if (reduceMotion) {
       currentIndex = index;
       renderProject();
-      leftAnim.cancel();rightAnim.cancel();
-      leftPageContent.animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],{duration:reduceMotion ? 1 : 290,easing:'ease-out'});
-      rightPageContent.animate([{opacity:0},{opacity:1}],{duration:reduceMotion ? 1 : 290,easing:'ease-out'});
+      isAnimating = false;
+      updateToolbar();
+      return;
+    }
+    if (compact.matches) {
+      // A noticeable two-phase card turn for stacked pages on mobile/tablets.
+      const spread = book.querySelector('.book-pages');
+      const sign = direction === 'next' ? -1 : 1;
+      const retreat = spread.animate([
+        {transform:'rotateY(0deg) scale(1)',opacity:1},
+        {transform:`rotateY(${sign * 32}deg) translateX(${sign * 24}px) scale(.965)`,opacity:.18}
+      ],{duration:490,fill:'forwards',easing:'cubic-bezier(.32,0,.78,.56)'});
+      await retreat.finished.catch(()=>{});
+      retreat.cancel();
+      currentIndex = index;
+      renderProject();
+      const arrive = spread.animate([
+        {transform:`rotateY(${-sign * 32}deg) translateX(${-sign * 24}px) scale(.965)`,opacity:.18},
+        {transform:'rotateY(0deg) translateX(0) scale(1)',opacity:1}
+      ],{duration:540,fill:'forwards',easing:'cubic-bezier(.18,.72,.2,1)'});
+      await arrive.finished.catch(()=>{});
+      arrive.cancel();
       isAnimating = false;
       updateToolbar();
       return;
