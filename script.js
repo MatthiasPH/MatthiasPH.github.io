@@ -1,161 +1,293 @@
-/* Matthias Paterson-Hawes Portfolio — no dependencies. */
 (() => {
-  document.body.classList.add('js');
+  const body = document.body;
+  body.classList.add('js');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // mobile nav
   const menuButton = document.querySelector('.mobile-toggle');
-  const mobileMenu = document.getElementById('mobile-navigation');
+  const mobileMenu = document.getElementById('mobile-nav');
   if (menuButton && mobileMenu) {
-    const closeMenu = () => { menuButton.setAttribute('aria-expanded','false'); menuButton.setAttribute('aria-label','Open navigation'); mobileMenu.hidden = true; };
+    const closeMenu = () => {
+      menuButton.setAttribute('aria-expanded', 'false');
+      mobileMenu.hidden = true;
+    };
     menuButton.addEventListener('click', () => {
       const expanded = menuButton.getAttribute('aria-expanded') === 'true';
       menuButton.setAttribute('aria-expanded', String(!expanded));
-      menuButton.setAttribute('aria-label', expanded ? 'Open navigation' : 'Close navigation');
       mobileMenu.hidden = expanded;
     });
     mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
-    window.addEventListener('resize', () => { if (window.innerWidth > 700) closeMenu(); });
+    window.addEventListener('resize', () => { if (window.innerWidth > 1100) closeMenu(); });
   }
+
+  // reveal
   const reveals = [...document.querySelectorAll('.reveal')];
-  if (reduceMotion || !('IntersectionObserver' in window)) reveals.forEach(el => el.classList.add('in-view'));
-  else {
-    const io = new IntersectionObserver(entries => entries.forEach(entry => {
-      if (entry.isIntersecting) { entry.target.classList.add('in-view'); io.unobserve(entry.target); }
-    }), {threshold: .09, rootMargin: '0px 0px -5% 0px'});
+  if (reduceMotion || !('IntersectionObserver' in window)) {
+    reveals.forEach(el => el.classList.add('in-view'));
+  } else {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -5% 0px' });
     reveals.forEach(el => io.observe(el));
   }
-  requestAnimationFrame(() => document.body.classList.add('is-ready'));
 
-  // Page transitions for internal navigation. Works with file:// and GitHub Pages.
-  document.querySelectorAll('a[href]').forEach(a => {
-    const href = a.getAttribute('href') || '';
-    if (!/^((index|projects|about|experience)\.html)(#.*)?$/.test(href) || reduceMotion) return;
-    a.addEventListener('click', e => {
-      if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-      e.preventDefault(); document.body.classList.add('is-leaving');
-      setTimeout(() => { location.href = href; }, 240);
-    });
-  });
-  addEventListener('pageshow', () => document.body.classList.remove('is-leaving'));
+  // project book data
+  const book = document.getElementById('projectBook');
+  if (!book) return;
+  const projects = [
+    {
+      number: '01 / 09',
+      category: 'ROBOTICS / EMBEDDED SYSTEMS',
+      title: 'Quadruped Robot — Version 2',
+      summary: 'I redesigned my first walking robot into an eight-servo quadruped with independently controlled hip and knee joints. An ESP32-C3 coordinates the gait, while onboard sensing provides a platform for obstacle detection and future autonomous behaviour.',
+      challenge: 'Coordinate two joints per leg while keeping the chassis and electronics practical to assemble, calibrate and debug.',
+      action: 'Developed multi-servo gait sequences, calibrated servo centres and travel limits, and refined power distribution and cable routing.',
+      outcome: 'A more capable second-generation walking platform with greater control over foot placement, body motion and later sensor experiments.',
+      tags: ['ESP32-C3', 'Embedded C/C++', '8-servo gait', '3D printing'],
+      media: [{type:'image', src:'assets/quadruped.webp', caption:'Assembled second-version quadruped prototype.'}]
+    },
+    {
+      number: '02 / 09',
+      category: 'MECHANICAL DESIGN / DRIVETRAIN',
+      title: 'Custom RC Car',
+      summary: 'I designed and built a custom RC car around a 3D-printed chassis and electric drivetrain. The project involved CAD modelling, drivetrain layout, gearing calculations, printed gearbox and motor mounts, shaft support, assembly and repeated testing.',
+      challenge: 'Package a compact geartrain while keeping shafts aligned, moving parts supported and friction under control.',
+      action: 'Calculated gear ratios and centre distances, worked through backlash and bearing support, and revised printed mounts using assembly tests.',
+      outcome: 'A modular drivetrain prototype that made the effects of tolerances, stiffness and print orientation visible in real hardware.',
+      tags: ['CAD', 'Geartrain design', '3D printing', 'Testing'],
+      media: [{type:'image', src:'assets/rc-car.webp', caption:'Printed chassis and drivetrain assembly.'}]
+    },
+    {
+      number: '03 / 09',
+      category: 'PARAMETRIC CAD / PROTOTYPING',
+      title: 'Modular Dowel Storage Mounts',
+      summary: 'I created a family of 3D-printed mounts that locate 20 mm wooden dowels and turn them into a modular storage structure. Multiple geometries were developed so the same dowel size could be used in different support and bracing arrangements.',
+      challenge: 'Achieve reliable locating and holding fits despite dimensional variation in FDM-printed parts.',
+      action: 'Iterated small fit-test pieces, varied clearances and print orientation, and used wall thickness, fillets and braces to improve the load path.',
+      outcome: 'Repeatable mount geometries with practical slip and interference fit tolerances, reducing wasted prints during development.',
+      tags: ['Tolerance design', 'Parametric CAD', 'Fit testing', 'Design for FDM'],
+      media: [{type:'image', src:'assets/dowel-mounts.webp', caption:'CAD models of alternative dowel mount geometries.'}]
+    },
+    {
+      number: '04 / 09',
+      category: 'UNIVERSITY / DESIGN PROJECT',
+      title: 'Warman Project Robot',
+      summary: 'For a university Warman design project, I developed a detailed CAD concept combining a mobile chassis, collection hopper and multi-link arm with a gripper. The concept was not selected for the final build, but it was a strong exercise in mechanism layout and system integration. This spread also shows the physical Warman machine and a short demonstration clip.',
+      challenge: 'Fit multiple moving subsystems into one machine envelope without ignoring assembly clearances or access.',
+      action: 'Built the mechanical assembly, checked interfaces and interference, and considered fasteners, supports and manufacturing sequence.',
+      outcome: 'A coherent concept useful for evaluating reach, packaging and integration risks before physical fabrication.',
+      tags: ['SolidWorks', 'Mechanism layout', 'Design for assembly', 'Packaging'],
+      media: [
+        {type:'image', src:'assets/warman-build.webp', caption:'Physical Warman machine on display.'},
+        {type:'video', src:'assets/warman-demo.mp4', poster:'assets/warman-demo-poster.webp', caption:'Demonstration video of the Warman project.'}
+      ]
+    },
+    {
+      number: '05 / 09',
+      category: 'ROCKETRY / PROTOTYPING',
+      title: 'Modular Two-Stage Rocket',
+      summary: 'This was my first iteration of a small modular two-stage rocket. The first stage uses fins for passive stability, while the second-stage concept was intended to use gyroscope-controlled thrust vectoring. I modelled the components in Fusion 360 and assembled a full-size printed prototype.',
+      challenge: 'Create repeatable interfaces and package nested sections while balancing stability concepts with manufacturability.',
+      action: 'Modelled the modular components, tuned mating clearances and checked physical fit and scale with printed assemblies.',
+      outcome: 'A full-size prototype that exposed tolerance stack-up and assembly issues before any advanced sensing or control work.',
+      tags: ['Fusion 360', 'Modular design', 'Tolerance stack-up', '3D printing'],
+      media: [{type:'image', src:'assets/modular-rocket.webp', caption:'Modular CAD components and the assembled printed prototype.'}]
+    },
+    {
+      number: '06 / 09',
+      category: 'ARDUINO / PRODUCT PROTOTYPE',
+      title: 'Automatic Rubbish Bin',
+      summary: 'I built a touch-free rubbish bin using an Arduino, an IR proximity sensor, a display and an SG90 servo. When a user is detected, the servo opens the lid and the control logic keeps it open for approximately two seconds before closing.',
+      challenge: 'Make a reliable hands-free mechanism with simple electronics while reducing missed detections and unwanted triggers.',
+      action: 'Integrated sensing, display and actuation using event-driven timing, then refined sensor placement, servo travel and enclosure access.',
+      outcome: 'A compact practical prototype for hygienic 3D-printing waste disposal in my workspace.',
+      tags: ['Arduino', 'IR sensing', 'Servo actuation', 'Control logic'],
+      media: [{type:'image', src:'assets/automatic-bin.webp', caption:'Enclosure CAD model and electronics test setup.'}]
+    },
+    {
+      number: '07 / 09',
+      category: 'ELECTRONICS / INTEGRATION',
+      title: 'Modular Electronics Control Board',
+      summary: 'I designed and soldered a compact control board integrating an Arduino Uno, two motor-driver modules, a 5 V buck converter and removable connectors. The board consolidated a larger wiring arrangement while keeping major components replaceable.',
+      challenge: 'Distribute regulated power and route control signals cleanly while keeping higher-current modules serviceable.',
+      action: 'Planned electrical integration and connector access, soldered the board, and used continuity checks and multimeter testing to isolate faults.',
+      outcome: 'A neater, more serviceable control assembly with clearer cable management and easier troubleshooting.',
+      tags: ['Arduino Uno', 'Motor drivers', 'Buck conversion', 'Troubleshooting'],
+      media: [{type:'image', src:'assets/control-board.webp', caption:'Hand-assembled control board during integration and testing.'}]
+    },
+    {
+      number: '08 / 09',
+      category: 'PLACEHOLDER / ROCKETRY',
+      title: 'Level 1 Rocket Launch',
+      summary: 'Placeholder for a future project page covering a Level 1 rocket launch, the design decisions behind it, launch preparation, flight results and lessons learned.',
+      challenge: 'Project details to be added later.',
+      action: 'You will add the real information and media once ready.',
+      outcome: 'This slot is reserved so the redesign already has space for the upcoming launch project.',
+      tags: ['Coming soon', 'Rocket launch', 'Placeholder'],
+      media: [{type:'placeholder', heading:'Level 1 Rocket Launch', text:'Reserved for launch photos, flight details, build notes and results.'}]
+    },
+    {
+      number: '09 / 09',
+      category: 'PLACEHOLDER / MECHANICAL DESIGN',
+      title: 'Gearbox Design',
+      summary: 'Placeholder for a future gearbox design project page, intended for the concept, design process, calculations, CAD, manufacture and testing outcomes.',
+      challenge: 'Project details to be added later.',
+      action: 'You will add the real information and media once ready.',
+      outcome: 'This slot is reserved so the book already supports the extra project when you send the full details.',
+      tags: ['Coming soon', 'Gearbox', 'Placeholder'],
+      media: [{type:'placeholder', heading:'Gearbox Design', text:'Reserved for CAD renders, calculations, prototype images and performance discussion.'}]
+    }
+  ];
 
-  // Accessible, full-width Warman demonstration player. Kept outside the sticky reel.
-  const warmanDialog = document.getElementById('warman-video-dialog');
-  const warmanVideo = warmanDialog?.querySelector('video');
-  const warmanWatchButton = document.querySelector('[data-open-warman-video]');
-  warmanWatchButton?.addEventListener('click', () => {
-    if (!warmanDialog) return;
-    if (typeof warmanDialog.showModal === 'function') warmanDialog.showModal();
-    else warmanDialog.setAttribute('open','');
-    document.body.classList.add('warman-video-open');
-  });
-  warmanDialog?.querySelector('[data-close-warman-video]')?.addEventListener('click', () => {
-    if (typeof warmanDialog.close === 'function') warmanDialog.close();
-    else {warmanDialog.removeAttribute('open'); warmanVideo?.pause(); document.body.classList.remove('warman-video-open');}
-  });
-  warmanDialog?.addEventListener('click', event => {
-    if (event.target === warmanDialog) warmanDialog.close();
-  });
-  warmanDialog?.addEventListener('close', () => {
-    warmanVideo?.pause();
-    if (warmanVideo) warmanVideo.currentTime = 0;
-    document.body.classList.remove('warman-video-open');
-    // Restore keyboard focus to the trigger when the dialog closes.
-    warmanWatchButton?.focus({preventScroll:true});
-  });
+  const leftPageContent = document.getElementById('leftPageContent');
+  const rightPageContent = document.getElementById('rightPageContent');
+  const flipSheet = document.getElementById('flipSheet');
+  const counter = document.getElementById('bookCounter');
+  const titleHint = document.getElementById('bookTitleHint');
+  const toc = document.getElementById('bookToc');
+  const prevButton = document.getElementById('prevProject');
+  const nextButton = document.getElementById('nextProject');
+  const cover = document.getElementById('bookCover');
+  const coverOpenButton = document.getElementById('coverOpenButton');
+  const openBookButton = document.getElementById('openBookButton');
+  const goFirstButton = document.getElementById('goFirstButton');
 
-  // Projects: smooth, demonstrable scroll-position-controlled crossfade.
-  // On desktop all seven project panels occupy the SAME stage; no scrolling individual cards.
-  const reel = document.querySelector('.projects-reel');
-  const panels = [...document.querySelectorAll('.project-panel')];
-  if (!reel || panels.length === 0) return;
-  const mobile = window.matchMedia('(max-width:700px)');
-  const current = document.getElementById('reel-current');
-  const meter = document.getElementById('reel-meter-fill');
-  let frame = null;
-  const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
+  let currentIndex = 0;
+  let isAnimating = false;
+  let wheelLock = false;
 
-  function updateCrossfade() {
-    frame = null;
-    const small = mobile.matches;
-    if (small) {
-      panels.forEach(panel => {
-        // On phones keep every project fully readable; no partial fade-over between cards.
-        panel.style.opacity = '1';
-        panel.style.transform = '';
-        panel.style.visibility = 'visible';
-        panel.style.pointerEvents = 'auto';
-        panel.classList.add('is-active');
-        panel.setAttribute('aria-hidden', 'false');
-      });
+  function renderLeft(project) {
+    leftPageContent.innerHTML = `
+      <div class="project-kicker"><span>${project.number}</span><span>${project.category}</span></div>
+      <h2>${project.title}</h2>
+      <p class="book-summary">${project.summary}</p>
+      <div class="book-notes">
+        <div class="book-note"><span>THE CHALLENGE</span><p>${project.challenge}</p></div>
+        <div class="book-note"><span>WHAT I DID</span><p>${project.action}</p></div>
+        <div class="book-note"><span>THE OUTCOME</span><p>${project.outcome}</p></div>
+      </div>
+      <div class="book-tags">${project.tags.map(tag => `<span>${tag}</span>`).join('')}</div>
+    `;
+  }
+
+  function mediaMarkup(item) {
+    if (item.type === 'image') {
+      return `<div class="media-frame media-primary"><img src="${item.src}" alt="${item.caption}"></div><p class="media-caption">${item.caption}</p>`;
+    }
+    if (item.type === 'video') {
+      return `<div class="media-frame media-primary"><video controls playsinline preload="metadata" poster="${item.poster || ''}"><source src="${item.src}" type="video/mp4">Your browser does not support the video tag.</video></div><p class="media-caption">${item.caption}</p><a class="video-link" href="${item.src}" target="_blank" rel="noopener noreferrer">Open video in a new tab ↗</a>`;
+    }
+    return `<div class="media-frame media-primary placeholder"><div class="placeholder-card"><p class="tiny-label">COMING SOON</p><h3>${item.heading}</h3><p>${item.text}</p></div></div>`;
+  }
+
+  function renderRight(project) {
+    if (project.media.length === 1) {
+      rightPageContent.innerHTML = `<div class="media-block">${mediaMarkup(project.media[0])}</div>`;
       return;
     }
-    // Give each project more reading time before starting the transition.
-    reel.style.height = `${100 + (panels.length - 1) * 155}vh`;
-    const rect = reel.getBoundingClientRect();
-    const headerHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header')) || 82;
-    const available = Math.max(1, reel.offsetHeight - (window.innerHeight - headerHeight));
-    const distance = clamp(-rect.top, 0, available);
-    const progress = distance / available;
-    const position = progress * (panels.length - 1);
-    const baseIndex = Math.max(0, Math.min(panels.length - 1, Math.floor(position)));
-    const local = position - baseIndex;
-    const holdStart = 0.38;
-    const holdEnd = 0.62;
-    const smoothstep = t => t * t * (3 - 2 * t);
-    let currentOpacity = 1;
-    let nextOpacity = 0;
-    if (baseIndex < panels.length - 1) {
-      if (local <= holdStart) {
-        currentOpacity = 1;
-        nextOpacity = 0;
-      } else if (local >= holdEnd) {
-        currentOpacity = 0;
-        nextOpacity = 1;
-      } else {
-        const mix = smoothstep((local - holdStart) / (holdEnd - holdStart));
-        currentOpacity = 1 - mix;
-        nextOpacity = mix;
-      }
-    }
-    panels.forEach((panel, i) => {
-      let opacity = 0;
-      if (i === baseIndex) opacity = currentOpacity;
-      else if (i === baseIndex + 1) opacity = nextOpacity;
-      panel.style.opacity = opacity.toFixed(4);
-      panel.style.visibility = opacity > 0.002 ? 'visible' : 'hidden';
-      panel.classList.toggle('is-active', opacity > 0.002);
-      panel.style.pointerEvents = opacity > 0.55 ? 'auto' : 'none';
-      panel.setAttribute('aria-hidden', opacity > 0.55 ? 'false' : 'true');
-    });
-    const activeIndex = nextOpacity >= 0.5 ? Math.min(baseIndex + 1, panels.length - 1) : baseIndex;
-    if (current) current.textContent = String(activeIndex + 1).padStart(2,'0');
-    if (meter) meter.style.width = `${Math.round(progress*100)}%`;
+    const [first, second] = project.media;
+    rightPageContent.innerHTML = `
+      <div class="media-block">
+        <div>
+          ${mediaMarkup(first)}
+        </div>
+        <div class="media-secondary">
+          <div>
+            ${mediaMarkup(second)}
+          </div>
+          <div class="media-frame placeholder">
+            <div class="placeholder-card">
+              <p class="tiny-label">PROJECT NOTE</p>
+              <h3>${project.title}</h3>
+              <p>Use this spread to pair a key photo or video with supporting context. More project-specific material can be added later.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
   }
-  const scheduleUpdate = () => {if (!frame) frame = requestAnimationFrame(updateCrossfade);};
-  addEventListener('scroll',scheduleUpdate,{passive:true});
-  addEventListener('resize',scheduleUpdate);
-  mobile.addEventListener('change',scheduleUpdate);
-  updateCrossfade();
 
-  // The fade preview visibly animates between the first and second panel.
-  // Using native scrolling means this is exactly the same effect as manual scrolling.
-  document.querySelector('.demo-fade')?.addEventListener('click', () => {
-    if (mobile.matches) {panels[0]?.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});return;}
-    const startY = reel.getBoundingClientRect().top + scrollY;
-    const length = reel.offsetHeight - (innerHeight - 82);
-    const from = startY;
-    const to = startY + length/(panels.length-1);
-    scrollTo({top:from,behavior:'instant'});
-    if (reduceMotion) {scrollTo({top:to,behavior:'instant'});return;}
-    const t0 = performance.now();
-    const duration = 2300;
-    function tick(now) {const t=clamp((now-t0)/duration,0,1);const eased=t*t*(3-2*t);scrollTo({top:from+(to-from)*eased,behavior:'instant'});if(t<1)requestAnimationFrame(tick);}
-    requestAnimationFrame(tick);
-  });
-  // Follow direct links from the homepage's project list to a project position.
-  if (location.hash && /^#project-0[1-7]$/.test(location.hash) && !mobile.matches) {
-    const targetNumber=Number(location.hash.slice(-1))-1;
-    const move=()=>{const start=reel.getBoundingClientRect().top+scrollY;const travel=reel.offsetHeight-(innerHeight-82);scrollTo({top:start+travel*targetNumber/(panels.length-1),behavior:'instant'});scheduleUpdate();};
-    addEventListener('load',()=>setTimeout(move,80),{once:true});
+  function updateToolbar(project) {
+    counter.textContent = project.number;
+    titleHint.textContent = project.title;
+    prevButton.disabled = currentIndex === 0;
+    nextButton.disabled = currentIndex === projects.length - 1;
+    document.querySelectorAll('.toc-item').forEach((item, idx) => item.classList.toggle('active', idx === currentIndex));
   }
+
+  function renderProject(index) {
+    const project = projects[index];
+    renderLeft(project);
+    renderRight(project);
+    updateToolbar(project);
+  }
+
+  function openBook() {
+    cover.classList.add('open');
+  }
+
+  function turnTo(index, direction = 'forward') {
+    if (index < 0 || index >= projects.length || index === currentIndex || isAnimating) return;
+    isAnimating = true;
+    const className = direction === 'backward' ? 'animate-backward' : 'animate-forward';
+    flipSheet.classList.remove('animate-forward', 'animate-backward');
+    void flipSheet.offsetWidth;
+    flipSheet.classList.add(className);
+    setTimeout(() => {
+      currentIndex = index;
+      renderProject(currentIndex);
+    }, reduceMotion ? 0 : 290);
+    setTimeout(() => {
+      flipSheet.classList.remove('animate-forward', 'animate-backward');
+      isAnimating = false;
+    }, reduceMotion ? 0 : 930);
+  }
+
+  function buildToc() {
+    toc.innerHTML = projects.map((project, idx) => `
+      <button class="toc-item ${idx === 0 ? 'active' : ''}" type="button" data-index="${idx}">
+        <strong>${String(idx + 1).padStart(2, '0')} — ${project.title}</strong>
+        <span>${project.category}</span>
+      </button>
+    `).join('');
+    toc.querySelectorAll('.toc-item').forEach(button => {
+      button.addEventListener('click', () => {
+        openBook();
+        const idx = Number(button.dataset.index);
+        turnTo(idx, idx < currentIndex ? 'backward' : 'forward');
+      });
+    });
+  }
+
+  prevButton.addEventListener('click', () => turnTo(currentIndex - 1, 'backward'));
+  nextButton.addEventListener('click', () => turnTo(currentIndex + 1, 'forward'));
+  coverOpenButton?.addEventListener('click', openBook);
+  openBookButton?.addEventListener('click', openBook);
+  goFirstButton?.addEventListener('click', () => { openBook(); turnTo(0, 'backward'); });
+
+  book.addEventListener('wheel', e => {
+    if (window.innerWidth <= 820) return;
+    openBook();
+    if (wheelLock || isAnimating) return;
+    if (Math.abs(e.deltaY) < 14) return;
+    e.preventDefault();
+    wheelLock = true;
+    if (e.deltaY > 0) turnTo(currentIndex + 1, 'forward');
+    else turnTo(currentIndex - 1, 'backward');
+    setTimeout(() => { wheelLock = false; }, 760);
+  }, { passive: false });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { openBook(); turnTo(currentIndex + 1, 'forward'); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { openBook(); turnTo(currentIndex - 1, 'backward'); }
+  });
+
+  buildToc();
+  renderProject(currentIndex);
+  if (reduceMotion) openBook();
 })();
