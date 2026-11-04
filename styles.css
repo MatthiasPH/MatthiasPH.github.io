@@ -62,3 +62,82 @@ img,video{max-width:100%;display:block}
 @media (max-width: 1100px){.hero{grid-template-columns:1fr;gap:40px}.hero-book-preview{justify-content:flex-start}.strip-grid,.projects-top,.experience-columns{grid-template-columns:1fr}.book-page{min-height:640px}.page-content{padding:34px 30px}.left-page h2{font-size:44px}.toc-grid{grid-template-columns:repeat(2,1fr)}}
 @media (max-width: 820px){:root{--header:70px}.desktop-nav{display:none}.mobile-toggle{display:flex}.mobile-nav{display:block}.book-pages{grid-template-columns:1fr}.book-gutter,.book-cover,.book-spread-shadow{display:none}.book-shell{min-height:0}.book-page{min-height:0;border-radius:18px}.right-page{margin-top:12px}.page-content{padding:26px 22px}.book-toolbar{flex-wrap:wrap}.book-status{order:-1;width:100%}.media-primary{min-height:250px}.media-secondary{grid-template-columns:1fr}.toc-grid{grid-template-columns:1fr}.home-links{grid-template-columns:1fr}}
 @media (max-width: 620px){.shell{width:calc(100% - 28px)}.brand-name{display:none}.hero{padding:42px 0 64px}.hero-copy h1{font-size:52px}.hero-text,.projects-top-copy p,.experience-intro p,.strip-grid p{font-size:15px}.next-card h3{font-size:34px}.projects-top h1,.experience-intro h1{font-size:48px}.left-page h2{font-size:36px}.book-summary{font-size:14px;max-width:100%}.book-notes p{font-size:12px}.book-page.right-page .page-content{padding-top:20px}}
+
+
+/* V2 / physical book camera and two-sided page animation */
+.book-stage{perspective:2100px;overflow:visible}
+.book-shell{transform-style:preserve-3d;position:relative;isolation:isolate;
+  transform:translateX(-24%) scale(.66) rotateX(10deg) rotateY(-12deg);
+  transform-origin:center center;
+  transition:transform 1.55s cubic-bezier(.16,.78,.2,1),filter 1.55s ease;
+  filter:drop-shadow(0 35px 32px rgba(0,0,0,.6));
+  will-change:transform}
+.book-shell.is-open{transform:translateX(0) scale(1) rotateX(0deg) rotateY(0deg);
+  filter:drop-shadow(0 28px 52px rgba(0,0,0,.50))}
+.book-shell:not(.is-open) .left-page,.book-shell:not(.is-open) .book-gutter{opacity:0}
+.book-shell.is-open .left-page,.book-shell.is-open .book-gutter{opacity:1;transition:opacity .35s ease .4s}
+.book-pages{transform-style:preserve-3d;overflow:visible;isolation:isolate}
+.book-cover{left:calc(50% + 5px);width:calc(50% - 5px);right:auto;
+  transform-origin:left center;transform:rotateY(0);transform-style:preserve-3d;
+  transition:transform 1.22s cubic-bezier(.26,.7,.13,1),opacity .2s ease;
+  box-shadow:8px 7px 28px rgba(0,0,0,.55);cursor:pointer}
+.book-cover.open{transform:rotateY(-180deg);pointer-events:none;
+  transition:transform 1.25s cubic-bezier(.26,.7,.13,1),opacity .22s ease 1.18s}
+.book-cover.is-rested{opacity:0;visibility:hidden}
+.cover-front,.cover-back{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.cover-back{background:#111215;border:1px solid #33343a;transform:rotateY(180deg);border-radius:0 12px 12px 0;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:28px;color:#787d87;font-size:11px;letter-spacing:2px}
+.cover-back-mark{font-size:94px;letter-spacing:-.14em;font-weight:850;color:#2e3137;line-height:1}
+.cover-back-mark span{color:var(--blue)}
+.cover-front{border-radius:0 12px 12px 0}
+.book-hint{text-align:center;padding:8px 4px 0;color:#737986;letter-spacing:2.1px;font-size:10px;font-weight:740}
+.book-shell:not(.is-open) + .book-hint{color:#8fa9e9}
+.flip-sheet{position:absolute;top:0;bottom:0;left:calc(50% + 5px);width:calc(50% - 5px);
+  display:none;z-index:40;transform:rotateY(0);transform-style:preserve-3d;pointer-events:none;
+  filter:drop-shadow(-7px 5px 10px rgba(37,29,16,.14))}
+.flip-sheet.turning{display:block}
+.flip-sheet.turn-next{left:calc(50% + 5px);transform-origin:left center}
+.flip-sheet.turn-prev{left:0;transform-origin:right center}
+.flip-face{position:absolute;inset:0;background:linear-gradient(105deg,#f5ecd9 0%,#ede3cf 100%);
+  border:1px solid rgba(83,66,44,.2);backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  overflow:hidden;transform-style:preserve-3d;box-shadow:inset 10px 0 22px rgba(65,45,25,.055)}
+.flip-front{transform:rotateY(0);border-radius:0 12px 12px 0}
+.flip-back{transform:rotateY(180deg);border-radius:12px 0 0 12px;
+  background:linear-gradient(105deg,#e6d9c1,#f6edde 100%);box-shadow:inset -12px 0 22px rgba(65,45,25,.1)}
+.flip-sheet.turn-prev .flip-front{border-radius:12px 0 0 12px}
+.flip-sheet.turn-prev .flip-back{border-radius:0 12px 12px 0}
+.flip-face .page-content{height:100%}
+.book-toolbar button:disabled{opacity:.34;cursor:not-allowed;transform:none;box-shadow:none}
+.book-shell.is-closed .book-pages{pointer-events:none}
+.book-cover:not(.open){pointer-events:auto}
+.warman-media{gap:12px;overflow-y:auto;min-height:0;scrollbar-width:thin}
+.warman-media .media-item{min-height:0;flex:1;display:flex;flex-direction:column}
+.warman-media .media-frame{height:100%;min-height:190px;flex:1}
+.warman-media .media-frame img,.warman-media .media-frame video{object-fit:contain}
+.warman-media .media-caption{margin-top:6px}
+.warman-media .video-link{margin-top:2px}
+@media(max-width:1100px){.book-shell{transform:translateX(-24%) scale(.72) rotateX(8deg) rotateY(-9deg)}}
+@media(max-width:820px){
+  .book-shell{transform:translateX(0) scale(.82) rotateX(7deg)}
+  .book-shell.is-open{transform:none}
+  .book-cover{display:block;left:0;top:0;width:100%;height:420px;transform-origin:left center}
+  .cover-front{position:absolute}
+  .cover-back{border-radius:16px}
+  .book-pages{display:flex;flex-direction:column;overflow:visible}
+  .book-shell:not(.is-open) .book-pages{opacity:0;pointer-events:none}
+  .book-shell.is-open .book-pages{opacity:1;transition:opacity .5s ease .5s}
+  .book-shell .left-page{opacity:1!important}
+  .book-cover.open{transform:rotateY(-165deg)}
+  .flip-sheet{display:none!important}
+  .warman-media .media-frame{min-height:210px}
+  .book-stage{overflow:hidden}
+}
+@media(prefers-reduced-motion:reduce){.book-shell,.book-cover,.book-pages,.left-page,.book-gutter{transition:none!important}}
+
+[hidden]{display:none!important}
+.book-page .page-content{overflow-y:auto;scrollbar-width:thin;scrollbar-color:#beb49f transparent}
+.flip-face .page-content{overflow:hidden}
+.toc-item{color:var(--ink)}
+.toc-item strong{color:#e7e9ee}
+.toc-item span{color:#9ca4b2}
+@media(min-width:821px){.book-shell,.book-page{min-height:660px}}

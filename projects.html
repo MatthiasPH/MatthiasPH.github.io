@@ -42,21 +42,23 @@
         <p>A literal book-inspired portfolio with animated opening, page turning and dedicated space for each project. Use <strong>next / previous</strong>, your <strong>scroll wheel</strong>, or the <strong>arrow keys</strong>.</p>
         <div class="book-controls-inline">
           <button class="mini-button" id="openBookButton" type="button">Open book</button>
+          <button class="mini-button" id="closeBookButton" type="button" hidden>Replay opening ↶</button>
           <button class="mini-button" id="goFirstButton" type="button">Go to first project</button>
         </div>
       </div>
     </section>
 
     <section class="book-stage reveal" aria-label="Engineering project portfolio book">
-      <div class="book-shell" id="projectBook">
+      <div class="book-shell" id="projectBook" aria-label="Closed project portfolio, press Open portfolio to view">
         <div class="book-cover" id="bookCover">
-          <div class="cover-surface">
+          <div class="cover-surface cover-front">
             <p class="cover-label">ENGINEERING PROJECT PORTFOLIO</p>
             <div class="cover-logo">m<span>.</span></div>
             <h2>Matthias<br>Paterson-Hawes</h2>
             <p class="cover-copy">Mechanical Design / Embedded Systems / Prototyping</p>
             <button class="button button-solid cover-open-button" id="coverOpenButton" type="button">Open portfolio <span>↗</span></button>
           </div>
+          <div class="cover-back" aria-hidden="true"><span class="cover-back-mark">m<span>.</span></span><span>ENGINEERING PORTFOLIO · MPH</span></div>
         </div>
         <div class="book-pages">
           <div class="book-spread-shadow"></div>
@@ -66,11 +68,15 @@
           <div class="book-gutter"></div>
           <div class="book-page right-page">
             <div class="page-content" id="rightPageContent"></div>
-            <div class="flip-sheet" id="flipSheet" aria-hidden="true"></div>
+          </div>
+          <div class="flip-sheet" id="flipSheet" aria-hidden="true">
+            <div class="flip-face flip-front" id="flipFront"></div>
+            <div class="flip-face flip-back" id="flipBack"></div>
           </div>
         </div>
       </div>
 
+      <div class="book-hint" id="bookHint" aria-live="polite">CLOSED · CLICK THE COVER TO OPEN</div>
       <div class="book-toolbar">
         <button class="button button-ghost" id="prevProject" type="button">← Previous page</button>
         <div class="book-status">

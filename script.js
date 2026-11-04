@@ -17,7 +17,7 @@
       mobileMenu.hidden = expanded;
     });
     mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
-    window.addEventListener('resize', () => { if (window.innerWidth > 1100) closeMenu(); });
+    window.addEventListener('resize', () => { if (window.innerWidth > 820) closeMenu(); });
   }
 
   // reveal
@@ -147,6 +147,8 @@
   const leftPageContent = document.getElementById('leftPageContent');
   const rightPageContent = document.getElementById('rightPageContent');
   const flipSheet = document.getElementById('flipSheet');
+  const flipFront = document.getElementById('flipFront');
+  const flipBack = document.getElementById('flipBack');
   const counter = document.getElementById('bookCounter');
   const titleHint = document.getElementById('bookTitleHint');
   const toc = document.getElementById('bookToc');
@@ -155,14 +157,23 @@
   const cover = document.getElementById('bookCover');
   const coverOpenButton = document.getElementById('coverOpenButton');
   const openBookButton = document.getElementById('openBookButton');
+  const closeBookButton = document.getElementById('closeBookButton');
   const goFirstButton = document.getElementById('goFirstButton');
-
+  const bookHint = document.getElementById('bookHint');
+  const bookStage = document.querySelector('.book-stage');
+  const compact = window.matchMedia('(max-width:820px)');
+  const openDuration = reduceMotion ? 0 : 1580;
+  const turnDuration = reduceMotion ? 0 : 1100;
   let currentIndex = 0;
   let isAnimating = false;
-  let wheelLock = false;
+  let isOpen = false;
+  let openingPromise = null;
+  let lastWheelAt = 0;
+  let wheelAccum = 0;
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-  function renderLeft(project) {
-    leftPageContent.innerHTML = `
+  function leftHTML(project) {
+    return `
       <div class="project-kicker"><span>${project.number}</span><span>${project.category}</span></div>
       <h2>${project.title}</h2>
       <p class="book-summary">${project.summary}</p>
@@ -177,117 +188,208 @@
 
   function mediaMarkup(item) {
     if (item.type === 'image') {
-      return `<div class="media-frame media-primary"><img src="${item.src}" alt="${item.caption}"></div><p class="media-caption">${item.caption}</p>`;
+      return `<div class="media-frame media-primary"><img loading="lazy" src="${item.src}" alt="${item.caption}"></div><p class="media-caption">${item.caption}</p>`;
     }
     if (item.type === 'video') {
-      return `<div class="media-frame media-primary"><video controls playsinline preload="metadata" poster="${item.poster || ''}"><source src="${item.src}" type="video/mp4">Your browser does not support the video tag.</video></div><p class="media-caption">${item.caption}</p><a class="video-link" href="${item.src}" target="_blank" rel="noopener noreferrer">Open video in a new tab ↗</a>`;
+      return `<div class="media-frame media-primary"><video controls playsinline preload="metadata" poster="${item.poster || ''}"><source src="${item.src}" type="video/mp4">Your browser does not support video.</video></div><p class="media-caption">${item.caption}</p><a class="video-link" href="${item.src}" target="_blank" rel="noopener noreferrer">Open video in new tab ↗</a>`;
     }
     return `<div class="media-frame media-primary placeholder"><div class="placeholder-card"><p class="tiny-label">COMING SOON</p><h3>${item.heading}</h3><p>${item.text}</p></div></div>`;
   }
-
-  function renderRight(project) {
-    if (project.media.length === 1) {
-      rightPageContent.innerHTML = `<div class="media-block">${mediaMarkup(project.media[0])}</div>`;
-      return;
-    }
+  function rightHTML(project) {
+    if (project.media.length === 1) return `<div class="media-block">${mediaMarkup(project.media[0])}</div>`;
     const [first, second] = project.media;
-    rightPageContent.innerHTML = `
-      <div class="media-block">
-        <div>
-          ${mediaMarkup(first)}
-        </div>
-        <div class="media-secondary">
-          <div>
-            ${mediaMarkup(second)}
-          </div>
-          <div class="media-frame placeholder">
-            <div class="placeholder-card">
-              <p class="tiny-label">PROJECT NOTE</p>
-              <h3>${project.title}</h3>
-              <p>Use this spread to pair a key photo or video with supporting context. More project-specific material can be added later.</p>
-            </div>
-          </div>
-        </div>
+    return `
+      <div class="media-block warman-media">
+        <div class="media-item">${mediaMarkup(first)}</div>
+        <div class="media-item">${mediaMarkup(second)}</div>
       </div>
     `;
   }
 
-  function updateToolbar(project) {
+  function updateToolbar() {
+    const project = projects[currentIndex];
     counter.textContent = project.number;
     titleHint.textContent = project.title;
-    prevButton.disabled = currentIndex === 0;
-    nextButton.disabled = currentIndex === projects.length - 1;
-    document.querySelectorAll('.toc-item').forEach((item, idx) => item.classList.toggle('active', idx === currentIndex));
+    prevButton.disabled = currentIndex === 0 || isAnimating || !isOpen;
+    nextButton.disabled = currentIndex === projects.length - 1 || isAnimating || !isOpen;
+    document.querySelectorAll('.toc-item').forEach((item, i) => {
+      item.classList.toggle('active', currentIndex === i);
+      item.setAttribute('aria-current', currentIndex === i ? 'page' : 'false');
+    });
   }
-
-  function renderProject(index) {
-    const project = projects[index];
-    renderLeft(project);
-    renderRight(project);
-    updateToolbar(project);
+  function renderProject() {
+    leftPageContent.innerHTML = leftHTML(projects[currentIndex]);
+    rightPageContent.innerHTML = rightHTML(projects[currentIndex]);
+    updateToolbar();
   }
 
   function openBook() {
+    if (isOpen) return Promise.resolve();
+    if (openingPromise) return openingPromise;
+    bookHint.textContent = 'OPENING THE PORTFOLIO…';
+    // Dolly-in: pan the viewport to the book while its 3D camera transforms
+    // from a smaller angled cover to a full-size open spread.
+    const stageTop = window.scrollY + bookStage.getBoundingClientRect().top;
+    const headerOffset = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header')) || 76;
+    window.scrollTo({ top: Math.max(0, stageTop - headerOffset - 18), behavior: reduceMotion ? 'instant' : 'smooth' });
+    book.classList.add('is-open');
+    book.classList.remove('is-closed');
     cover.classList.add('open');
+    openBookButton.textContent = 'Book opened ✓';
+    openBookButton.disabled = true;
+    coverOpenButton.disabled = true;
+    // Camera pulls in as the front cover turns around the spine.
+    openingPromise = sleep(openDuration).then(() => {
+      isOpen = true;
+      cover.classList.add('is-rested');
+      closeBookButton.hidden = false;
+      openBookButton.hidden = true;
+      bookHint.textContent = 'SCROLL · CLICK THE ARROWS · USE ← → KEYS';
+      book.setAttribute('aria-label', 'Open project portfolio');
+      updateToolbar();
+      openingPromise = null;
+    });
+    return openingPromise;
+  }
+  async function replayOpen() {
+    if (isAnimating || openingPromise) return;
+    isOpen = false;
+    cover.classList.remove('is-rested','open');
+    book.classList.remove('is-open');
+    book.classList.add('is-closed');
+    openBookButton.hidden = false;
+    openBookButton.disabled = false;
+    openBookButton.textContent = 'Open book';
+    closeBookButton.hidden = true;
+    coverOpenButton.disabled = false;
+    bookHint.textContent = 'CLOSED · CLICK THE COVER TO OPEN';
+    updateToolbar();
+    await sleep(reduceMotion ? 0 : 800);
+    await openBook();
   }
 
-  function turnTo(index, direction = 'forward') {
+  function pauseVideo() {
+    rightPageContent.querySelectorAll('video').forEach(v => v.pause());
+  }
+  // The sheet sits ABOVE both pages, rather than inside the right page.
+  // Its front holds the old visible page, and its reverse holds the new page.
+  async function turnTo(index) {
     if (index < 0 || index >= projects.length || index === currentIndex || isAnimating) return;
+    if (!isOpen) await openBook();
+    if (isAnimating || index === currentIndex) return;
     isAnimating = true;
-    const className = direction === 'backward' ? 'animate-backward' : 'animate-forward';
-    flipSheet.classList.remove('animate-forward', 'animate-backward');
-    void flipSheet.offsetWidth;
-    flipSheet.classList.add(className);
-    setTimeout(() => {
+    updateToolbar();
+    pauseVideo();
+    const direction = index > currentIndex ? 'next' : 'prev';
+    const newProject = projects[index];
+    if (reduceMotion || compact.matches) {
+      const leftAnim = leftPageContent.animate(
+        [{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(8px)'}],
+        {duration:reduceMotion ? 1 : 180,fill:'forwards',easing:'ease-in'}
+      );
+      const rightAnim = rightPageContent.animate(
+        [{opacity:1},{opacity:0}],{duration:reduceMotion ? 1 : 180,fill:'forwards'}
+      );
+      await Promise.allSettled([leftAnim.finished,rightAnim.finished]);
       currentIndex = index;
-      renderProject(currentIndex);
-    }, reduceMotion ? 0 : 290);
-    setTimeout(() => {
-      flipSheet.classList.remove('animate-forward', 'animate-backward');
+      renderProject();
+      leftAnim.cancel();rightAnim.cancel();
+      leftPageContent.animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],{duration:reduceMotion ? 1 : 290,easing:'ease-out'});
+      rightPageContent.animate([{opacity:0},{opacity:1}],{duration:reduceMotion ? 1 : 290,easing:'ease-out'});
       isAnimating = false;
-    }, reduceMotion ? 0 : 930);
+      updateToolbar();
+      return;
+    }
+    const movingFront = direction === 'next' ? rightPageContent.innerHTML : leftPageContent.innerHTML;
+    const movingBack = direction === 'next' ? leftHTML(newProject) : rightHTML(newProject);
+    flipSheet.classList.toggle('turn-next',direction === 'next');
+    flipSheet.classList.toggle('turn-prev',direction === 'prev');
+    flipFront.innerHTML = `<div class="page-content">${movingFront}</div>`;
+    flipBack.innerHTML = `<div class="page-content">${movingBack}</div>`;
+    flipSheet.classList.add('turning');
+    // New page beneath sheet is visible progressively as the physical sheet turns.
+    if (direction === 'next') rightPageContent.innerHTML = rightHTML(newProject);
+    else leftPageContent.innerHTML = leftHTML(newProject);
+    const animation = flipSheet.animate([
+      {transform:'rotateY(0deg)',offset:0},
+      {transform:`rotateY(${direction === 'next' ? '-13deg' : '13deg'})`,offset:.12},
+      {transform:`rotateY(${direction === 'next' ? '-93deg' : '93deg'})`,offset:.53},
+      {transform:`rotateY(${direction === 'next' ? '-180deg' : '180deg'})`,offset:1}
+    ],{duration:turnDuration,easing:'cubic-bezier(.42,.04,.17,1)',fill:'forwards'});
+    await sleep(turnDuration * .54);
+    if (direction === 'next') leftPageContent.innerHTML = leftHTML(newProject);
+    else rightPageContent.innerHTML = rightHTML(newProject);
+    await animation.finished.catch(() => {});
+    animation.cancel();
+    flipSheet.classList.remove('turning','turn-next','turn-prev');
+    flipFront.innerHTML='';flipBack.innerHTML='';
+    currentIndex=index;
+    isAnimating=false;
+    updateToolbar();
   }
 
   function buildToc() {
-    toc.innerHTML = projects.map((project, idx) => `
-      <button class="toc-item ${idx === 0 ? 'active' : ''}" type="button" data-index="${idx}">
-        <strong>${String(idx + 1).padStart(2, '0')} — ${project.title}</strong>
-        <span>${project.category}</span>
-      </button>
-    `).join('');
+    toc.innerHTML = projects.map((p,i) => `
+      <button class="toc-item ${i===0?'active':''}" type="button" data-index="${i}">
+      <strong>${String(i+1).padStart(2,'0')} — ${p.title}</strong><span>${p.category}</span></button>`
+    ).join('');
     toc.querySelectorAll('.toc-item').forEach(button => {
-      button.addEventListener('click', () => {
-        openBook();
-        const idx = Number(button.dataset.index);
-        turnTo(idx, idx < currentIndex ? 'backward' : 'forward');
-      });
+      button.addEventListener('click', async () => { await openBook(); turnTo(Number(button.dataset.index)); });
     });
   }
-
-  prevButton.addEventListener('click', () => turnTo(currentIndex - 1, 'backward'));
-  nextButton.addEventListener('click', () => turnTo(currentIndex + 1, 'forward'));
-  coverOpenButton?.addEventListener('click', openBook);
-  openBookButton?.addEventListener('click', openBook);
-  goFirstButton?.addEventListener('click', () => { openBook(); turnTo(0, 'backward'); });
-
+  // Wheel turns ONE PAGE at a time, with a threshold and cooldown so trackpads
+  // cannot accidentally skip through several projects.
   book.addEventListener('wheel', e => {
-    if (window.innerWidth <= 820) return;
-    openBook();
-    if (wheelLock || isAnimating) return;
-    if (Math.abs(e.deltaY) < 14) return;
+    if (compact.matches || e.target.closest('video')) return;
+    // If a long page or the Warman media column needs internal scrolling,
+    // allow that first instead of turning the book prematurely.
+    const scrollArea = e.target.closest('.warman-media, .page-content');
+    if (scrollArea && scrollArea.scrollHeight > scrollArea.clientHeight + 3) {
+      const canScrollUp = scrollArea.scrollTop > 2;
+      const canScrollDown = scrollArea.scrollTop + scrollArea.clientHeight < scrollArea.scrollHeight - 2;
+      if ((e.deltaY < 0 && canScrollUp) || (e.deltaY > 0 && canScrollDown)) return;
+    }
+    const dir = Math.sign(e.deltaY);
+    if (Math.abs(e.deltaY) < 1 || e.ctrlKey) return;
+    if (isOpen && ((dir < 0 && currentIndex === 0) || (dir > 0 && currentIndex === projects.length-1))) return;
     e.preventDefault();
-    wheelLock = true;
-    if (e.deltaY > 0) turnTo(currentIndex + 1, 'forward');
-    else turnTo(currentIndex - 1, 'backward');
-    setTimeout(() => { wheelLock = false; }, 760);
-  }, { passive: false });
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'PageDown') { openBook(); turnTo(currentIndex + 1, 'forward'); }
-    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { openBook(); turnTo(currentIndex - 1, 'backward'); }
+    if (openingPromise || isAnimating) return;
+    wheelAccum += e.deltaY;
+    if (Math.abs(wheelAccum) < 60) return;
+    const now = performance.now();
+    if (now-lastWheelAt < 1200) return;
+    const turnDir = Math.sign(wheelAccum);
+    wheelAccum = 0;
+    lastWheelAt=now;
+    if (!isOpen) openBook();
+    else turnTo(currentIndex+turnDir);
+  },{passive:false});
+  let touchStart=null;
+  bookStage.addEventListener('touchstart',e=>{
+    if(e.target.closest('video,button,a'))return;
+    const t=e.changedTouches[0];touchStart={x:t.clientX,y:t.clientY};
+  },{passive:true});
+  bookStage.addEventListener('touchend',e=>{
+    if(!touchStart||e.target.closest('video,button,a'))return;
+    const t=e.changedTouches[0];const dx=t.clientX-touchStart.x;const dy=t.clientY-touchStart.y;
+    touchStart=null;
+    if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.4)turnTo(currentIndex+(dx<0?1:-1));
+  },{passive:true});
+  document.addEventListener('keydown',e=>{
+    if (e.altKey||e.ctrlKey||e.metaKey || /^(INPUT|TEXTAREA|SELECT|VIDEO)$/.test(document.activeElement?.tagName||''))return;
+    if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();turnTo(currentIndex+1);}
+    if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();turnTo(currentIndex-1);}
   });
 
+  prevButton.addEventListener('click',()=>turnTo(currentIndex-1));
+  nextButton.addEventListener('click',()=>turnTo(currentIndex+1));
+  coverOpenButton.addEventListener('click',openBook);
+  cover.addEventListener('click',e=>{if(e.target.closest('button'))return;openBook();});
+  openBookButton.addEventListener('click',openBook);
+  closeBookButton.addEventListener('click',replayOpen);
+  goFirstButton.addEventListener('click',async()=>{await openBook();turnTo(0);});
+  book.classList.add('is-closed');
   buildToc();
-  renderProject(currentIndex);
+  renderProject();
   if (reduceMotion) openBook();
 })();
