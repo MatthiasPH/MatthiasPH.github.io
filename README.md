@@ -1,27 +1,32 @@
-# Matthias Paterson-Hawes — Cinematic Book Portfolio (v2)
+# Matthias Paterson-Hawes · Engineering Portfolio
 
-Three-page static website: `index.html`, `projects.html`, and `experience.html`.
+Static GitHub Pages website. Home (`index.html`), Projects (`projects.html`), Experience (`experience.html`), plus **seven dedicated case-study pages** inside `projects/`.
 
-## Preview locally
+## Deployment
+1. Extract this ZIP.
+2. Upload **contents** to root of `MatthiasPH.github.io` repository.
+3. Remove old `about.html` if desired; it is no longer linked.
+4. Keep `assets/` and `projects/` folder structures intact.
+5. GitHub Pages will serve `index.html` automatically.
 
-Extract all files, including the `assets` folder, into the same directory. Open `index.html` in your browser. For full browser compatibility you may also run a local web server, e.g. `python -m http.server 8000`, then visit `http://localhost:8000/`.
+## 3D robotic arm viewer
+The Robotics Arm page includes a **demo** arm GLB plus a working **offline draggable 3D fallback**. The arm shown is not your real assembly. To replace it:
+- Export your CAD assembly to glTF Binary `.glb`. If needed use Blender to import STEP-converted mesh or OBJ/FBX and export `.glb`.
+- Replace `assets/robot-arm-demo.glb`, or change the `src` in `projects/robotic-arm.html`.
+- The `model-viewer` script is loaded from Google CDN, so the full GLB renderer needs internet. The fallback interactive demo works without external dependencies.
 
-## GitHub Pages deployment
+## Content updates
+- `projects/robotic-arm.html`: completed build but technical details pending.
+- `projects/level-one-rocket.html` and `projects/gearbox.html`: placeholders pending project information.
+- Removed modular dowel mounts, two-stage rocket, and automatic rubbish bin from the navigation and case studies.
+- Warman page includes real video and distinguishes final team build from unused CAD concept.
 
-Upload the **contents** of this folder, not the enclosing folder, to the root of `MatthiasPH/MatthiasPH.github.io`. Replace existing site files, retain `assets/` and check that `script.js` (not only `script.js.txt`) is present. Changes may take a few minutes to publish. Use a hard refresh if you see an older version.
+No GitHub files were modified automatically.
 
-## What changed
+If a browser blocks downloading `.js` individually, `script.js.txt` contains the same code; remove `.txt` after downloading or use the original `script.js` from the ZIP. GitHub Pages should reference `script.js`, not `.txt`.
 
-- The portfolio begins as a zoomed-out, angled **closed book**.
-- Clicking **Open portfolio** triggers a moving-camera dolly/pan and a 3D cover-opening animation.
-- Next / Previous turns an actual **two-sided page** that crosses the book gutter, revealing the next project's spread. Both forward and backward turns work.
-- Mouse-wheel page turns on desktop, keyboard arrow/Page Up/Page Down keys, clickable table of contents, and swipe + buttons on mobile.
-- Mobile uses a lighter fade between pages for readability and performance.
-- `Replay opening` runs the intro again.
-- All original seven project descriptions and photos, including the Warman video, remain; Level 1 Rocket Launch and Gearbox Design are placeholders.
-- Users who prefer reduced motion get a simplified interaction.
 
-All project data is in `script.js` in the `projects` array. Update the two placeholders there when you have more details.
-
-## Page-turn animation fix (v3)
-The original 3D turning sheet inherited opacity: 0 from an earlier CSS rule, so projects changed without a visible leaf. v3 explicitly makes the sheet visible, preserves 3D perspective, and adds a clearly visible stacked-page transition on narrow screens. The HTML files use versioned CSS/JS URLs to discourage GitHub Pages from showing old cached assets.
+## Colour update (black / white / orange)
+All seven case studies and the three main pages keep the same layout and content.
+The interface, m. mark, favicon, interactive CAD fallback and demonstration GLB have been recoloured to orange / neutral monochrome. The robotic-arm preview picture is rendered in greyscale by CSS to remove its previous blue theme; actual project photos retain their natural colours.
+Accent colour: `#FF742E`; page background: `#080808`; text: `#F6F6F4`.

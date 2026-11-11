@@ -1,101 +1,66 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#080808" />
-  <meta name="description" content="Matthias Paterson-Hawes — mechanical engineering student portfolio." />
-  <title>Matthias Paterson-Hawes — Home</title>
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=3" />
-  <script defer src="script.js?v=3"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080808">
+  <meta name="description" content="Matthias Paterson-Hawes — Mechanical engineering student at the University of Auckland. CAD, robotics, embedded electronics and prototyping.">
+  <title>Matthias Paterson-Hawes — Mechanical Engineering</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="script.js"></script>
 </head>
-<body class="theme-dark home-page">
-  <div class="page-noise" aria-hidden="true"></div>
+<body class="minimal-homepage">
+  <a class="skip" href="#main">Skip to content</a>
   <header class="site-header">
-    <div class="shell nav-row">
-      <a class="brand" href="index.html" aria-label="Home">
-        <span class="brand-mark">m<span class="brand-dot">.</span></span>
-        <span class="brand-name">Matthias Paterson-Hawes</span>
+    <div class="shell topbar">
+      <a class="wordmark" href="index.html" aria-label="Matthias Paterson-Hawes, home">
+        <span class="monogram">m<span>.</span></span>
+        <span class="word-caption">MATTHIAS<br>PATERSON-HAWES</span>
       </a>
-      <nav class="desktop-nav">
-        <a class="active" href="index.html">Home</a>
+      <nav class="nav-desktop" aria-label="Main navigation">
+        <a class="active" aria-current="page" href="index.html">Home</a>
         <a href="projects.html">Projects</a>
         <a href="experience.html">Experience</a>
       </nav>
-      <button class="mobile-toggle" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open navigation"><span></span><span></span></button>
+      <div class="header-right">
+        <a href="mailto:mpat265@aucklanduni.ac.nz" class="tiny-contact">Contact ↗</a>
+        <button class="menu-toggle" type="button" aria-controls="mobile-menu" aria-expanded="false" aria-label="Toggle navigation"><span></span><span></span></button>
+      </div>
     </div>
-    <nav id="mobile-nav" class="mobile-nav" hidden>
-      <a class="active" href="index.html">Home</a>
+    <nav id="mobile-menu" class="nav-mobile" hidden aria-label="Mobile navigation">
+      <a class="active" aria-current="page" href="index.html">Home</a>
       <a href="projects.html">Projects</a>
       <a href="experience.html">Experience</a>
     </nav>
   </header>
 
-  <main>
-    <section class="hero shell">
-      <div class="hero-copy reveal">
-        <p class="eyebrow"><span class="dot"></span> MECHANICAL ENGINEERING · AUCKLAND</p>
-        <h1>A project portfolio<br>that feels like a <span>real object</span>.</h1>
-        <p class="hero-text">I'm Matthias Paterson-Hawes, a Mechanical Engineering student who likes building things for real — from CAD and drivetrains to embedded systems, 3D printing, robotics and rapid iteration.</p>
-        <div class="hero-actions">
-          <a class="button button-solid" href="projects.html">Open the portfolio <span>↗</span></a>
-          <a class="button button-ghost" href="assets/Matthias-Paterson-Hawes-Resume.pdf" target="_blank" rel="noopener noreferrer">Resume <span>↗</span></a>
-        </div>
-        <div class="hero-meta">
-          <span>09 PROJECTS</span>
-          <span>BOOK EXPERIENCE</span>
-          <span>BLACK EDITION</span>
+  <main id="main" class="minimal-main shell">
+    <section class="minimal-landing" aria-labelledby="home-title">
+      <div class="minimal-intro">
+        <div class="minimal-eyebrow"><span class="minimal-rule" aria-hidden="true"></span> ENGINEERING STUDENT · UNIVERSITY OF AUCKLAND</div>
+        <h1 id="home-title">Matthias<br>Paterson-Hawes<span class="minimal-period">.</span></h1>
+        <p>Mechanical engineering student interested in design, robotics and turning ideas into working prototypes. I enjoy the process from CAD and 3D printing through to electronics, testing and refinement.</p>
+        <div class="minimal-links">
+          <a href="projects.html">View projects <span aria-hidden="true">↗</span></a>
+          <a href="experience.html">Experience <span aria-hidden="true">↗</span></a>
         </div>
       </div>
-      <div class="hero-book-preview reveal">
-        <div class="book-preview-stack">
-          <div class="book-spine"></div>
-          <div class="book-cover-panel">
-            <div class="cover-inner">
-              <p class="cover-label">ENGINEERING PROJECT PORTFOLIO</p>
-              <div class="cover-logo">m<span>.</span></div>
-              <h2>Matthias<br>Paterson-Hawes</h2>
-              <p>Mechanical Design / Embedded Systems / Prototyping</p>
-            </div>
-          </div>
-          <div class="book-page-glow"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="home-strip">
-      <div class="shell strip-grid reveal">
-        <div>
-          <p class="tiny-label">PORTFOLIO CONCEPT</p>
-          <h2>Three pages.<br><span>One strong idea.</span></h2>
-        </div>
-        <div>
-          <p>The website now centres on a book-style Projects page. Instead of a long scroll of case studies, the portfolio opens like a physical object and lets each project sit on its own spread.</p>
-          <ul class="feature-list">
-            <li>Animated book opening sequence</li>
-            <li>Click or scroll to turn pages</li>
-            <li>Seven real projects + two placeholders</li>
-            <li>Dark, minimal visual language</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="home-links shell reveal">
-      <a class="next-card dark-card" href="projects.html">
-        <p class="tiny-label">PROJECTS</p>
-        <h3>Open the book.</h3>
-        <p>View the full project portfolio as a page-turning experience.</p>
-        <span>Go to Projects ↗</span>
-      </a>
-      <a class="next-card dark-card" href="experience.html">
-        <p class="tiny-label">EXPERIENCE</p>
-        <h3>See the background.</h3>
-        <p>Work, tutoring, awards and the engineering context behind the builds.</p>
-        <span>Go to Experience ↗</span>
-      </a>
+      <figure class="minimal-photo">
+        <img src="assets/warman-build.webp" alt="Real Warman engineering robot assembly on display" loading="eager" fetchpriority="high">
+        <figcaption><span>01 / REAL PROJECT WORK</span><span>Warman project · prototype</span></figcaption>
+      </figure>
     </section>
   </main>
+  <footer class="minimal-footer">
+    <div class="shell minimal-footer-inner">
+      <span>© 2026 Matthias Paterson-Hawes</span>
+      <div aria-label="Social and contact links">
+        <a href="https://github.com/MatthiasPH" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+        <a href="https://www.linkedin.com/in/matthias-paterson-hawes-66008b354/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+        <a href="mailto:mpat265@aucklanduni.ac.nz">Email ↗</a>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
