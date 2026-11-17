@@ -11,21 +11,19 @@ Static GitHub Pages website. Home (`index.html`), Projects (`projects.html`), Ex
 
 ## Interactive CAD
 
-The RC Car and Pencil Plotter pages include the actual SOLIDWORKS assemblies as
-GLB files. Select **Explore in 3D** to load the model. Drag to orbit and use
+The RC Car, Pencil Plotter and Gearbox pages use the supplied SOLIDWORKS CAD
+exports. Select **Explore in 3D** to load the model. Drag to orbit and use
 the mouse wheel or pinch to zoom. The preview image is shown until the 3D
 model loads.
 
-GitHub Pages serves the viewer automatically. To try 3D locally, run
-`python -m http.server` in the extracted folder and open
-`http://localhost:8000`. Opening the HTML directly shows the static previews.
+Open the extracted `index.html` in a WebGL-capable browser for a local preview. The viewers also run on GitHub Pages, and load the model only when requested. Keep the extracted folders together so the pages can find their assets.
 
 ## Project media
 
-- Robotic arm: one-day build, single build plate, MG90S servos and the assembled arm photo.
-- Rocket launch: launch figures and four field and workshop photos.
-- Gearbox: design trade-offs, a gearbox close-up and workshop test-rig footage.
-- RC car: bench footage of the printed drivetrain.
+- Robotic arm: one-day build, single build plate, MG90S servos and a build photo gallery.
+- Rocket launch: launch figures, flight video and four field and workshop photos.
+- Gearbox: design trade-offs, close-up stills from the gearbox footage and the workshop test-rig clip.
+- RC car: black V1 prototype photo and V2 CAD and drivetrain bench footage. V2 is in development.
 - Pencil plotter: dedicated page marked CAD complete.
 
 The archive includes the full site for GitHub Pages.

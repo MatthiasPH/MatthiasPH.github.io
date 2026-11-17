@@ -190,9 +190,6 @@ body.minimal-homepage .site-header{flex-shrink:0}
   object-position: center 47%;
 }
 
-.photo-thumb--gearbox img {
-  object-position: center 68%;
-}
 
 .plotter-thumb {
   display: grid;

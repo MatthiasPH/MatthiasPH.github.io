@@ -3,43 +3,68 @@ const model = viewer.querySelector('model-viewer');
 const poster = viewer.querySelector('.cad-poster');
 const launch = viewer.querySelector('.cad-launch');
 const status = viewer.querySelector('[role="status"]');
-let attempts = 0;
+const rendererPath = new URL('model-viewer-4.3.1.js', document.currentScript.src);
+let modelUrl;
+
+function loadScript(source) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = source;
+    script.onload = () => {
+      script.remove();
+      resolve(script.cadModel);
+    };
+    script.onerror = () => {
+      script.remove();
+      reject(new Error('Could not load the viewer or its model.'));
+    };
+    document.head.append(script);
+  });
+}
+
+function releaseModelUrl() {
+  if (modelUrl) {
+    URL.revokeObjectURL(modelUrl);
+    modelUrl = undefined;
+  }
+}
 
 function showFallback() {
-  status.textContent = 'Interactive 3D could not load. The rendered preview is shown above.';
+  releaseModelUrl();
+  model.removeAttribute('src');
   model.hidden = true;
   poster.hidden = false;
   launch.disabled = false;
   launch.hidden = false;
   launch.textContent = 'Retry 3D';
-  model.removeAttribute('src');
+  status.textContent = 'Interactive 3D could not load. The rendered preview is shown above.';
 }
 
 async function openModel() {
   launch.disabled = true;
   status.textContent = 'Loading 3D model…';
 
-  if (location.protocol === 'file:') {
-    launch.hidden = true;
-    status.textContent = 'Open the site through a web server to use interactive 3D.';
-    return;
-  }
-
   try {
-    await import('./vendor/model-viewer-4.3.1.min.js');
-    const source = new URL(model.dataset.src, document.baseURI);
-    attempts += 1;
-    if (attempts > 1) {
-      source.searchParams.set('retry', attempts);
+    if (!customElements.get('model-viewer')) {
+      await loadScript(rendererPath);
+      if (!customElements.get('model-viewer')) throw new Error('3D renderer unavailable.');
     }
+    const encoded = await loadScript(model.dataset.src);
+    const binary = atob(encoded);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    modelUrl = URL.createObjectURL(new Blob([bytes], { type: 'model/gltf-binary' }));
     model.hidden = false;
-    model.setAttribute('src', source.href);
+    model.setAttribute('src', modelUrl);
   } catch {
     showFallback();
   }
 }
 
 model.addEventListener('load', () => {
+  releaseModelUrl();
   poster.hidden = true;
   launch.hidden = true;
   status.textContent = 'Drag to rotate. Scroll or pinch to zoom.';
