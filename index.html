@@ -4,63 +4,108 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080808">
-  <meta name="description" content="Matthias Paterson-Hawes — Mechanical engineering student at the University of Auckland. CAD, robotics, embedded electronics and prototyping.">
-  <title>Matthias Paterson-Hawes — Mechanical Engineering</title>
+  <meta name="description" content="Matthias Paterson-Hawes, mechanical engineering student at the University of Auckland.">
+  <title>Matthias Paterson-Hawes</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
-  <script defer src="script.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --background: #080808;
+      --foreground: #f6f6f6;
+      --accent: #ff742e;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100svh;
+      max-width: 55rem;
+      margin: 0 auto;
+      padding: clamp(1.5rem, 5vw, 3.5rem);
+      display: grid;
+      grid-template-rows: auto minmax(min-content, 1fr) auto;
+      background: var(--background);
+      color: var(--foreground);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    .mark {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.12em;
+      line-height: 1;
+    }
+
+    .mark span {
+      color: var(--accent);
+    }
+
+    main {
+      grid-row: 2;
+      align-self: center;
+      padding-block: 3rem 4.5rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 8vw, 4.5rem);
+      font-weight: 650;
+      line-height: 1.06;
+      letter-spacing: -0.06em;
+      overflow-wrap: anywhere;
+    }
+
+    h1 span {
+      display: block;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem clamp(1.5rem, 4vw, 2.5rem);
+      margin-top: 1.25rem;
+    }
+
+    nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      color: inherit;
+      text-underline-offset: 0.3em;
+      text-decoration-color: #757575;
+      transition: color 180ms ease, text-decoration-color 180ms ease;
+    }
+
+    nav a:hover,
+    nav a:focus-visible {
+      color: var(--accent);
+      text-decoration-color: currentColor;
+    }
+
+    nav a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      nav a {
+        transition: none;
+      }
+    }
+  </style>
 </head>
-<body class="minimal-homepage">
-  <a class="skip" href="#main">Skip to content</a>
-  <header class="site-header">
-    <div class="shell topbar">
-      <a class="wordmark" href="index.html" aria-label="Matthias Paterson-Hawes, home">
-        <span class="monogram">m<span>.</span></span>
-        <span class="word-caption">MATTHIAS<br>PATERSON-HAWES</span>
-      </a>
-      <nav class="nav-desktop" aria-label="Main navigation">
-        <a class="active" aria-current="page" href="index.html">Home</a>
-        <a href="projects.html">Projects</a>
-        <a href="experience.html">Experience</a>
-      </nav>
-      <div class="header-right">
-        <a href="mailto:mpat265@aucklanduni.ac.nz" class="tiny-contact">Contact ↗</a>
-        <button class="menu-toggle" type="button" aria-controls="mobile-menu" aria-expanded="false" aria-label="Toggle navigation"><span></span><span></span></button>
-      </div>
-    </div>
-    <nav id="mobile-menu" class="nav-mobile" hidden aria-label="Mobile navigation">
-      <a class="active" aria-current="page" href="index.html">Home</a>
+<body>
+  <header class="mark" aria-hidden="true">m<span>.</span></header>
+  <main>
+    <h1>Matthias <span>Paterson-Hawes</span></h1>
+    <nav aria-label="Portfolio">
       <a href="projects.html">Projects</a>
       <a href="experience.html">Experience</a>
     </nav>
-  </header>
-
-  <main id="main" class="minimal-main shell">
-    <section class="minimal-landing" aria-labelledby="home-title">
-      <div class="minimal-intro">
-        <div class="minimal-eyebrow"><span class="minimal-rule" aria-hidden="true"></span> ENGINEERING STUDENT · UNIVERSITY OF AUCKLAND</div>
-        <h1 id="home-title">Matthias<br>Paterson-Hawes<span class="minimal-period">.</span></h1>
-        <p>Mechanical engineering student interested in design, robotics and turning ideas into working prototypes. I enjoy the process from CAD and 3D printing through to electronics, testing and refinement.</p>
-        <div class="minimal-links">
-          <a href="projects.html">View projects <span aria-hidden="true">↗</span></a>
-          <a href="experience.html">Experience <span aria-hidden="true">↗</span></a>
-        </div>
-      </div>
-      <figure class="minimal-photo">
-        <img src="assets/warman-build.webp" alt="Real Warman engineering robot assembly on display" loading="eager" fetchpriority="high">
-        <figcaption><span>01 / REAL PROJECT WORK</span><span>Warman project · prototype</span></figcaption>
-      </figure>
-    </section>
   </main>
-  <footer class="minimal-footer">
-    <div class="shell minimal-footer-inner">
-      <span>© 2026 Matthias Paterson-Hawes</span>
-      <div aria-label="Social and contact links">
-        <a href="https://github.com/MatthiasPH" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
-        <a href="https://www.linkedin.com/in/matthias-paterson-hawes-66008b354/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
-        <a href="mailto:mpat265@aucklanduni.ac.nz">Email ↗</a>
-      </div>
-    </div>
-  </footer>
 </body>
 </html>
