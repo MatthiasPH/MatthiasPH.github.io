@@ -268,32 +268,12 @@ body.minimal-homepage .site-header{flex-shrink:0}
 .cad-controls {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  column-gap: 1rem;
-  row-gap: 0.5rem;
   min-height: 44px;
   margin-top: 12px;
   color: var(--muted);
   font-size: 0.9rem;
 }
 
-.cad-launch {
-  min-height: 44px;
-  padding: 8px 16px;
-  color: var(--fg);
-  background: var(--panel);
-  border: 1px solid var(--orange);
-  cursor: pointer;
-}
-
-.cad-launch:focus-visible {
-  outline: 2px solid var(--orange);
-  outline-offset: 3px;
-}
-
-.cad-launch:disabled {
-  cursor: default;
-}
 
 .photo-thumb--cad {
   background: #17181a;

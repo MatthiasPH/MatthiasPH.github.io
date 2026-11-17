@@ -1,7 +1,6 @@
 const viewer = document.querySelector('[data-cad-viewer]');
 const model = viewer.querySelector('model-viewer');
 const poster = viewer.querySelector('.cad-poster');
-const launch = viewer.querySelector('.cad-launch');
 const status = viewer.querySelector('[role="status"]');
 const rendererPath = new URL('model-viewer-4.3.1.js', document.currentScript.src);
 let modelUrl;
@@ -34,14 +33,10 @@ function showFallback() {
   model.removeAttribute('src');
   model.hidden = true;
   poster.hidden = false;
-  launch.disabled = false;
-  launch.hidden = false;
-  launch.textContent = 'Retry 3D';
-  status.textContent = 'Interactive 3D could not load. The rendered preview is shown above.';
+  status.textContent = '3D could not load. Reload the page to try again.';
 }
 
 async function openModel() {
-  launch.disabled = true;
   status.textContent = 'Loading 3D model…';
 
   try {
@@ -66,11 +61,8 @@ async function openModel() {
 model.addEventListener('load', () => {
   releaseModelUrl();
   poster.hidden = true;
-  launch.hidden = true;
   status.textContent = 'Drag to rotate. Scroll or pinch to zoom.';
-  model.focus({ preventScroll: true });
 });
 
 model.addEventListener('error', showFallback);
-launch.addEventListener('click', openModel);
-launch.hidden = false;
+openModel();

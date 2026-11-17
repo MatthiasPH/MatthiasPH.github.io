@@ -12,11 +12,11 @@ Static GitHub Pages website. Home (`index.html`), Projects (`projects.html`), Ex
 ## Interactive CAD
 
 The RC Car, Pencil Plotter and Gearbox pages use the supplied SOLIDWORKS CAD
-exports. Select **Explore in 3D** to load the model. Drag to orbit and use
+exports. The model loads automatically when you open its project page. Drag to orbit and use
 the mouse wheel or pinch to zoom. The preview image is shown until the 3D
 model loads.
 
-Open the extracted `index.html` in a WebGL-capable browser for a local preview. The viewers also run on GitHub Pages, and load the model only when requested. Keep the extracted folders together so the pages can find their assets.
+Open the extracted `index.html` in a WebGL-capable browser for a local preview. The viewers also run on GitHub Pages. Keep the extracted folders together so the pages can find their assets.
 
 ## Project media
 
