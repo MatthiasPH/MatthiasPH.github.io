@@ -256,13 +256,8 @@ body.minimal-homepage .site-header{flex-shrink:0}
   z-index: 1;
 }
 
-.cad-viewer [hidden] {
+.cad-stage > [hidden] {
   display: none;
-}
-
-.cad-viewer model-viewer:focus-visible {
-  outline: 2px solid var(--orange);
-  outline-offset: -3px;
 }
 
 .cad-controls {
@@ -281,4 +276,42 @@ body.minimal-homepage .site-header{flex-shrink:0}
 
 .photo-thumb--cad img {
   object-fit: contain;
+}
+
+.cad-card:hover {
+  transform: none;
+}
+
+.cad-card .cad-stage {
+  border-top: 0;
+}
+
+.cad-card .corner-index,
+.cad-preview-status {
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cad-preview-status {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  margin: 0;
+  padding: 4px 8px;
+  background: #080808b8;
+  color: var(--fg);
+  font-size: 0.75rem;
+}
+
+.cad-card .card-bottom:focus-visible,
+.cad-stage model-viewer:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: -2px;
+}
+
+.cad-card .card-bottom:hover h3 {
+  color: var(--orange);
 }
