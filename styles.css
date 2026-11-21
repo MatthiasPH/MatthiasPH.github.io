@@ -324,3 +324,13 @@ body.minimal-homepage .site-header{flex-shrink:0}
   .rocket-v2-spec + .rocket-v2-spec {border-left:0;border-top:1px solid var(--line)}
   .rocket-generation-roadmap {grid-template-columns:1fr;gap:30px}
 }
+
+/* Rocket V2 CAD within the development section, not at the top of the project */
+.rocket-v2-cad{margin-block:clamp(32px,5vw,66px) clamp(28px,4vw,52px)}
+.rocket-v2-cad-heading{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:17px}
+.rocket-v2-cad-heading h3{font-size:clamp(25px,3.5vw,43px);font-weight:630;letter-spacing:-.06em;margin:12px 0 0}
+.rocket-v2-cad-heading>span{color:#939393;font-size:12px;padding-bottom:5px}
+.rocket-v2-cad .cad-stage{height:clamp(410px,55vw,710px);background:#17181a}
+.rocket-v2-cad .cad-poster{object-fit:contain}
+.rocket-v2-cad-note{font-size:13px;color:#989898;line-height:1.6;margin:0}
+@media(max-width:700px){.rocket-v2-cad-heading{align-items:start;flex-direction:column;gap:8px}.rocket-v2-cad-heading>span{padding:0}.rocket-v2-cad .cad-stage{height:520px}}

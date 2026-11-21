@@ -5,21 +5,6 @@
     <h1>Level 1 Rocket Launch<span class="dot-orange">.</span></h1>
     <div class="case-meta"><p>V1 achieved a reported 550 m altitude and Mach 0.4 peak speed. V2 is now in development, targeting 1,150 m and Mach 0.7.</p><div><strong>STATUS</strong><span>V1 launched · V2 in development</span></div></div>
   </section>
-  <section class="shell cad-viewer" data-cad-viewer aria-labelledby="rocket-cad-title">
-    <h2 id="rocket-cad-title">V2 interactive concept</h2>
-    <div class="cad-stage">
-      <model-viewer hidden data-src="../assets/I205W-14Design.model.js" alt="Rough CAD concept for the V2 I205W-14 rocket"
-        camera-controls disable-pan orientation="0deg -90deg 0deg" camera-orbit="20deg 62deg 118%" environment-image="neutral"
-        interaction-prompt="none" loading="eager" touch-action="pan-y" tabindex="0">
-        <span slot="pan-target" aria-hidden="true"></span>
-      </model-viewer>
-      <img class="cad-poster" src="../assets/rocket-v2-concept-poster.png" alt="Visual concept render of the V2 I205W-14 rocket"
-        width="1400" height="2100" decoding="async">
-    </div>
-    <div class="cad-controls">
-      <span role="status">Rough V2 concept model based on the current I205W-14 design.</span>
-    </div>
-  </section>
   <section class="shell case-image"><div class="project-feature"><dl class="project-facts"><div><dt>Altitude</dt><dd>550 m</dd></div><div><dt>Peak speed</dt><dd>Mach 0.4</dd></div><div><dt>Stability margin</dt><dd>1.8</dd></div></dl><figure class="project-media-item"><img src="../assets/rocket-on-rail.webp" width="1080" height="1440" alt="Red and black Level 1 rocket on the launch rail in an open field" loading="eager" decoding="async"><figcaption>The rocket on its launch rail.</figcaption></figure></div></section>
   <section class="shell project-story">
     <h2>Flight stability</h2><p>Increasing the stability margin was a design priority. The configuration had a reported stability margin of 1.8.</p>
@@ -47,12 +32,32 @@
       </div>
       <span class="rocket-status">Development in progress</span>
     </div>
-    <p class="rocket-next-gen-intro">Building on the first launch, V2 is being developed around an <strong>I205W-14 rocket motor</strong> with a fully integrated onboard electronics package. The focus is to take the next step in performance while establishing an electronics platform for future iterations. The interactive model below shows the current rough V2 concept built around the I205W-14 design.</p>
+    <p class="rocket-next-gen-intro">Building on the first launch, V2 is being developed around an <strong>I205W-14 rocket motor</strong> with a fully integrated onboard electronics package. The focus is to take the next step in performance while establishing an electronics platform for future iterations. The 3D viewer below shows the current preliminary V2 geometry.</p>
     <div class="rocket-v2-specs" aria-label="V2 performance targets">
       <div class="rocket-v2-spec"><span>Target altitude</span><strong>1,150 <small>m</small></strong><em>Design goal · not yet flown</em></div>
       <div class="rocket-v2-spec"><span>Target peak speed</span><strong>Mach 0.7</strong><em>Design goal · not yet flown</em></div>
       <div class="rocket-v2-spec"><span>Motor</span><strong class="rocket-v2-motor">I205W-14</strong><em>Selected for V2</em></div>
     </div>
+
+    <section class="cad-viewer rocket-v2-cad" data-cad-viewer aria-labelledby="rocket-cad-title">
+      <div class="rocket-v2-cad-heading">
+        <div>
+          <span class="overline">CURRENT DESIGN · WORK IN PROGRESS</span>
+          <h3 id="rocket-cad-title">V2 3D concept<span class="dot-orange">.</span></h3>
+        </div>
+        <span>Drag to rotate · scroll or pinch to zoom</span>
+      </div>
+      <div class="cad-stage">
+        <model-viewer hidden data-src="../assets/I205W-14Design.model.js" alt="Rotatable current V2 rocket CAD model exported from the original OBJ geometry"
+          camera-controls disable-pan camera-orbit="25deg 73deg auto" environment-image="neutral"
+          interaction-prompt="none" loading="eager" touch-action="pan-y" tabindex="0">
+        </model-viewer>
+        <img class="cad-poster" src="../assets/rocket-v2-concept-poster.png" alt="Actual rocket V2 OBJ geometry shown in a shaded CAD view"
+          width="1200" height="820" decoding="async">
+      </div>
+      <div class="cad-controls"><span role="status">Loading 3D concept…</span></div>
+      <p class="rocket-v2-cad-note">Preliminary exterior geometry. Design and internal electronics integration are still in progress.</p>
+    </section>
     <div class="rocket-generation-roadmap">
       <div><span class="rocket-generation-number">01 / V1</span><h3>First flight</h3><p>Launched. Reported 550 m altitude, Mach 0.4 peak speed and stability margin of 1.8.</p></div>
       <div class="rocket-generation-current"><span class="rocket-generation-number">02 / V2</span><h3>Integrated electronics</h3><p>Under development. Integrating onboard electronics into the rocket and working toward the higher flight targets above.</p></div>
