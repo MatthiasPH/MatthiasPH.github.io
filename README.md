@@ -34,3 +34,10 @@ If a browser blocks downloading `.js` individually, `script.js.txt` contains the
 ## Colour update (black / white / orange)
 The site uses a black, white, and orange interface. Project photos retain their natural colours.
 Accent colour: `#FF742E`; page background: `#080808`; text: `#F6F6F4`.
+
+## Experience update (November 2026)
+The Experience page includes 6 years and 1,500+ print hours of FDM 3D printing, with material selection, design-for-additive-manufacturing considerations, calibration and iterative prototyping. The rest of the site is unchanged.
+
+
+## Rocket V2 update (21 November 2026)
+The rocket project page now separates completed V1 results from V2 in-development design goals (1,150 m, Mach 0.7; I205W-14 motor) and future V3 active canards. The Projects overview card also mentions V2 targets. No media was removed.

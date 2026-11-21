@@ -282,3 +282,45 @@ body.minimal-homepage .site-header{flex-shrink:0}
 .photo-thumb--cad img {
   object-fit: contain;
 }
+
+/* Hands-on 3D printing experience */
+.exp-intro{max-width:280px;margin:18px 0 0;color:#a9a9a9;font-size:14px;line-height:1.75}
+.printing-stats{display:flex;flex-wrap:wrap;gap:clamp(24px,5vw,80px);padding:2px 0 28px}
+.printing-stats>div{display:flex;flex-direction:column;gap:5px}
+.printing-stats strong{font-size:clamp(40px,5vw,76px);letter-spacing:-.075em;line-height:1;font-weight:680;color:#f6f6f6}
+.printing-stats strong span{font-size:.38em;font-weight:580;letter-spacing:-.02em;color:var(--orange)}
+.printing-stats small{color:#a7a7a7;font-size:11px;letter-spacing:1.1px;text-transform:uppercase;font-weight:650}
+.exp-entry>.exp-description{max-width:800px;padding:0 36px 27px 0}
+.exp-entry>.exp-description p{margin:0 0 15px;color:#bdbdbd;line-height:1.85;font-size:15px}
+.exp-entry>.exp-description p:last-child{margin-bottom:0}
+@media(max-width:750px){.printing-stats{gap:25px;padding-bottom:26px}.exp-entry>.exp-description{padding-right:10px}.exp-intro{max-width:none}}
+
+
+/* Level 1 rocket — V2 development (clearly distinct from completed V1) */
+.rocket-next-gen {padding-top:clamp(64px,9vw,120px);padding-bottom:clamp(74px,10vw,130px);border-top:1px solid var(--line)}
+.rocket-next-gen-top {display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:20px}
+.rocket-next-gen h2 {font-size:clamp(76px,12vw,160px);letter-spacing:-.09em;font-weight:680;line-height:.9;margin:14px 0 0}
+.rocket-status {border:1px solid #6d4b35;color:var(--orange);padding:9px 14px;font-size:10px;text-transform:uppercase;letter-spacing:1.1px;font-weight:700;white-space:nowrap}
+.rocket-next-gen-intro {max-width:810px;color:#c5c5c5;font-size:clamp(17px,1.7vw,23px);line-height:1.7;margin:20px 0 clamp(30px,5vw,60px)}
+.rocket-next-gen-intro strong {color:#f4f4f4;font-weight:600}
+.rocket-v2-specs {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.rocket-v2-spec {padding:33px clamp(18px,3.2vw,50px) 40px 0;display:flex;flex-direction:column;gap:16px;min-width:0}
+.rocket-v2-spec + .rocket-v2-spec {padding-left:clamp(18px,3.2vw,50px);border-left:1px solid var(--line)}
+.rocket-v2-spec>span {color:#a6a6a6;font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase}
+.rocket-v2-spec>strong {color:#f6f6f6;font-size:clamp(39px,5vw,73px);line-height:1.05;letter-spacing:-.06em;font-weight:670;white-space:nowrap}
+.rocket-v2-spec>strong small {font-size:.50em;color:var(--orange);letter-spacing:-.01em}
+.rocket-v2-spec>strong.rocket-v2-motor {font-size:clamp(30px,3.8vw,57px);color:var(--orange)}
+.rocket-v2-spec>em {font-style:normal;color:#999;font-size:12px}
+.rocket-generation-roadmap {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,3vw,42px);margin-top:clamp(40px,5vw,75px)}
+.rocket-generation-roadmap>div {padding-top:19px;border-top:1px solid #444}
+.rocket-generation-roadmap>div.rocket-generation-current {border-top:2px solid var(--orange)}
+.rocket-generation-number {font-size:10px;letter-spacing:1.3px;color:var(--orange);font-weight:700}
+.rocket-generation-roadmap h3 {font-size:clamp(20px,2.5vw,29px);letter-spacing:-.05em;font-weight:650;margin:17px 0 12px}
+.rocket-generation-roadmap p {font-size:14px;color:#a9a9a9;line-height:1.8;margin:0;max-width:380px}
+@media(max-width:750px) {
+  .rocket-next-gen-top {align-items:flex-start;flex-direction:column;gap:20px}
+  .rocket-v2-specs {grid-template-columns:1fr}
+  .rocket-v2-spec {padding:26px 0!important}
+  .rocket-v2-spec + .rocket-v2-spec {border-left:0;border-top:1px solid var(--line)}
+  .rocket-generation-roadmap {grid-template-columns:1fr;gap:30px}
+}
